@@ -11,7 +11,7 @@ const router = createRouter({
       name: 'Ecommerce',
       component: () => import('../views/Ecommerce.vue'),
       meta: {
-        title: 'eCommerce Dashboard',
+        title: 'Dashboard',
       },
     },
     {
@@ -30,13 +30,31 @@ const router = createRouter({
         title: 'Grading Data',
       },
     },
-        {
-      path: '/batchpage',
-      name: 'Batch Page',
-      component: () => import('../views/BatchPage.vue'),
-    },
     {
-      path: '/batch/add',
+    path: '/batches',
+    name: 'BatchList',
+    component: () => import('../views/BatchListPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  // {
+  //   path: '/batches/add',
+  //   name: 'BatchAdd',
+  //   component: () => import('../views/BatchListPage.vue'),
+  //   meta: { requiresAuth: true },
+  // },
+  {
+    path: '/batches/:id',
+    name: 'BatchDetail',
+    component: () => import('../views/BatchDetailPage.vue'),
+    meta: { requiresAuth: true },
+  },
+    //     {
+    //   path: '/batchpage',
+    //   name: 'Batch Page',
+    //   component: () => import('../views/BatchPage.vue'),
+    // },
+    {
+      path: '/batches/add',
       name: 'Add Batch',
       component: () => import('../views/AddBatchPage.vue'),
       meta: {
@@ -175,6 +193,6 @@ const router = createRouter({
 export default router
 
 router.beforeEach((to, from, next) => {
-  document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
+  document.title = `Bumiaji Sejahtera ${to.meta.title} | Grading System`
   next()
 })

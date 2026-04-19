@@ -1,15 +1,15 @@
 import { api } from "./api";
 
-export const getFarmers = () => api.get("/farmer");
+export const getFarmers = () => api.get("/farmers");
 
 export const getFarmerById = (id) =>
-  api.get(`/farmer/${id}`);
+  api.get(`/farmers/${id}`);
 
 export const createFarmer = (data) =>
-  api.post("/farmer", data);
+  api.post("/farmers", data);
 
 export const updateFarmer = (id, data) =>
-  api.put(`/farmer/${id}`, data);
+  api.put(`/farmers/${id}`, data);
 
 export const deleteFarmer = (id) =>
-  api.delete(`/farmer/${id}`);
+  api.delete(`/farmers/${id}`);

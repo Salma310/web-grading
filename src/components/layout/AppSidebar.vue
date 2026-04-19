@@ -24,7 +24,7 @@
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="dark:hidden"
-          src="/images/logo/logo.svg"
+          src="/images/logo/logo.png"
           alt="Logo"
           width="150"
           height="40"
@@ -32,14 +32,14 @@
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="hidden dark:block"
-          src="/images/logo/logo-dark.svg"
+          src="/images/logo/logo-dark.png"
           alt="Logo"
           width="150"
           height="40"
         />
         <img
           v-else
-          src="/images/logo/logo-icon.svg"
+          src="/images/logo/logo-icon.png"
           alt="Logo"
           width="32"
           height="32"
@@ -252,8 +252,18 @@ const menuGroups = [
        {
         icon: DocsIcon,
         name: "Batch Page",
-        path: "/batchpage",
+        path: "/batches",
       },
+      // {
+      //   icon: DocsIcon,
+      //   name: "Batch Page",
+      //   path: "/batches/add",
+      // },
+      // {
+      //   icon: DocsIcon,
+      //   name: "Batch Page",
+      //   path: "/batchpage",
+      // },
        {
         icon: ListIcon,
         name: "Grading Data",
