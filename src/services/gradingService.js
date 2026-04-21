@@ -9,9 +9,7 @@ export const getGradingById = (id) =>
 
 // createGrading menerima FormData (multipart) karena ada upload foto
 export const createGrading = (formData) =>
-  api.post('/gradings', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  api.post('/gradings', formData)
 
 export const getGradingByQr = (qrToken) =>
   api.get(`/gradings/qr/${qrToken}`)
