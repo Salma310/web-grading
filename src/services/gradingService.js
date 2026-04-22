@@ -11,6 +11,9 @@ export const getGradingById = (id) =>
 export const createGrading = (formData) =>
   api.post('/gradings', formData)
 
+export const getGradingStatus = (id) =>
+  api.get(`/gradings/${id}/status`)
+
 export const getGradingByQr = (qrToken) =>
   api.get(`/gradings/qr/${qrToken}`)
 // import { api } from "./api";

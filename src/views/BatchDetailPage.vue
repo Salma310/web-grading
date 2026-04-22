@@ -164,6 +164,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Grade</th>
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Confidence</th>
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Metode</th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Status</th>
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">QR Token</th>
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Waktu</th>
               </tr>
@@ -209,6 +210,15 @@
                   <span class="rounded px-2 py-0.5 text-xs"
                     :class="grading.grading_method === 'AI' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800'">
                     {{ grading.grading_method || 'AI' }}
+                  </span>
+                </td> <td class="px-6 py-4">
+                  <span class="rounded px-2 py-0.5 text-xs"
+                    :class="{
+                      'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400': grading.status === 'ERROR',
+                      'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400': grading.status === 'PROCESSING',
+                      'bg-green-100 text-green-500 dark:bg-green-800': grading.status === 'DONE'
+                    }">
+                    {{ grading.status }}
                   </span>
                 </td>
                 <td class="px-6 py-4">
@@ -372,6 +382,7 @@ import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import { getBatchById, closeBatch } from '@/services/batchService'
 import { getGradingsByBatch, createGrading } from '@/services/gradingService'
+import { useGradingPoller } from '@/composables/useGradingPoller'
 
 const route = useRoute()
 const batchId = route.params.id
@@ -392,6 +403,7 @@ const fileInput = ref(null)
 const selectedFiles = ref([])
 const modalForm = reactive({ grade: '' })
 const imagePreview = reactive({ show: false, urls: [], index: 0 })
+const { pollingStatus, pollingError, startPolling } = useGradingPoller()
 
 // ─── Toast ────────────────────────────────────────────────
 const toast = reactive({ show: false, type: 'success', title: '', body: '' })
@@ -449,68 +461,129 @@ const closeModal = () => {
 // ─── Submit ───────────────────────────────────────────────
 const handleSubmitGrading = async () => {
   modalError.value = ''
-  if (selectedFiles.value.length === 0) { modalError.value = 'Upload minimal 1 foto buah.'; return }
-  if (gradingMode.value === 'manual' && !modalForm.grade) { modalError.value = 'Pilih grade untuk mode manual.'; return }
+  if (selectedFiles.value.length === 0) {
+    modalError.value = 'Upload minimal 1 foto buah.'
+    return
+  }
 
   isSubmittingGrading.value = true
-  let aiResult = null
 
   try {
-    if (gradingMode.value === 'ai') {
-      isProcessingAI.value = true
-      try {
-        const aiFormData = new FormData()
-        selectedFiles.value.forEach(f => aiFormData.append('images', f.file))
-        const aiRes = await fetch(import.meta.env.VITE_AI_API_URL + '/predict', { method: 'POST', body: aiFormData })
-        if (!aiRes.ok) throw new Error('AI API error')
-        aiResult = await aiRes.json()
-      } catch {
-        modalError.value = 'Gagal menghubungi AI API. Ganti ke mode manual atau coba lagi.'
-        return
-      } finally {
-        isProcessingAI.value = false
-      }
-    }
-
     const formData = new FormData()
     formData.append('batch_id', batchId)
-    formData.append('grade', gradingMode.value === 'ai' ? aiResult.grade : modalForm.grade)
     formData.append('grading_method', gradingMode.value === 'ai' ? 'AI' : 'MANUAL')
-    if (aiResult) {
-      formData.append('confidence', aiResult.confidence_avg != null ? Number(aiResult.confidence_avg) : '')
-      formData.append('color_score', aiResult.color_score != null ? Number(aiResult.color_score) : '')
-      formData.append('texture_score', aiResult.texture_score != null ? Number(aiResult.texture_score) : '')
-      formData.append('defect_score', aiResult.defect_score != null ? Number(aiResult.defect_score) : '')
-      formData.append('ai_result', JSON.stringify(aiResult.ai_result ?? {}))
-      formData.append('defect_detected', aiResult.defect_detected ? 'true' : 'false')
-      formData.append('ml_model_used', aiResult.model_name ?? '')
-      formData.append('ml_model_version', aiResult.model_version ?? '')
+
+    if (gradingMode.value === 'manual') {
+      formData.append('grade', modalForm.grade)
     }
+
     selectedFiles.value.forEach(f => formData.append('images', f.file))
 
-    const res = await createGrading(formData)
-    const saved = res.data
+    // ✅ Backend langsung return 202 (tidak nunggu AI)
+    const res  = await createGrading(formData)
+    const data = res.data
 
-    // ✅ Tutup modal SEBELUM refresh — tidak ada balapan state
+    // Tutup modal LANGSUNG — user bisa foto jambu berikutnya
     closeModal()
 
-    // ✅ Toast dengan info grading yang baru masuk
-    showToast(
-      'success',
-      'Grading berhasil disimpan',
-      `${saved?.grading_code ?? ''} · Grade ${saved?.grade ?? (aiResult?.grade ?? modalForm.grade)}`
-    )
+    if (gradingMode.value === 'manual') {
+      // Manual: langsung selesai
+      showToast('success', 'Grading tersimpan', `${data.grading_code} · Grade ${data.grade}`)
+      await Promise.all([loadBatch(), loadGradings()])
 
-    // Refresh di background — user sudah lihat toast, tidak perlu nunggu
-    await Promise.all([loadBatch(), loadGradings()])
+    } else {
+      // AI mode: tampilkan toast "sedang diproses" lalu polling
+      showToast('info', 'Foto dikirim, AI sedang menganalisis...', data.grading_code)
+
+      startPolling(
+        data.grading_id,
+        // onDone
+        (result) => {
+          showToast('success', 'Grading selesai!', `${data.grading_code} · Grade ${result.grade}`)
+          loadBatch()
+          loadGradings()
+        },
+        // onError — foto salah / tidak ada jambu
+        (errMsg) => {
+          showToast('error',
+            'Foto tidak terdeteksi',
+            errMsg || 'Pastikan foto berisi buah jambu dan tidak blur'
+          )
+          loadGradings()  // refresh tetap (biar tampil status ERROR di tabel)
+        }
+      )
+    }
 
   } catch (err) {
-    modalError.value = err.response?.data?.message || err.message || 'Gagal menyimpan grading.'
+    modalError.value = err.response?.data?.error || err.message || 'Gagal menyimpan grading.'
   } finally {
     isSubmittingGrading.value = false
-    isProcessingAI.value = false
   }
 }
+// const handleSubmitGrading = async () => {
+//   modalError.value = ''
+//   if (selectedFiles.value.length === 0) { modalError.value = 'Upload minimal 1 foto buah.'; return }
+//   if (gradingMode.value === 'manual' && !modalForm.grade) { modalError.value = 'Pilih grade untuk mode manual.'; return }
+
+//   isSubmittingGrading.value = true
+//   let aiResult = null
+
+//   try {
+//     if (gradingMode.value === 'ai') {
+//       isProcessingAI.value = true
+//       try {
+//         const aiFormData = new FormData()
+//         selectedFiles.value.forEach(f => aiFormData.append('images', f.file))
+//         const aiRes = await fetch(import.meta.env.VITE_AI_API_URL + '/predict', { method: 'POST', body: aiFormData })
+//         if (!aiRes.ok) throw new Error('AI API error')
+//         aiResult = await aiRes.json()
+//       } catch {
+//         modalError.value = 'Gagal menghubungi AI API. Ganti ke mode manual atau coba lagi.'
+//         return
+//       } finally {
+//         isProcessingAI.value = false
+//       }
+//     }
+
+//     const formData = new FormData()
+//     formData.append('batch_id', batchId)
+//     formData.append('grade', gradingMode.value === 'ai' ? aiResult.grade : modalForm.grade)
+//     formData.append('grading_method', gradingMode.value === 'ai' ? 'AI' : 'MANUAL')
+//     if (aiResult) {
+//       formData.append('confidence', aiResult.confidence_avg != null ? Number(aiResult.confidence_avg) : '')
+//       formData.append('color_score', aiResult.color_score != null ? Number(aiResult.color_score) : '')
+//       formData.append('texture_score', aiResult.texture_score != null ? Number(aiResult.texture_score) : '')
+//       formData.append('defect_score', aiResult.defect_score != null ? Number(aiResult.defect_score) : '')
+//       formData.append('ai_result', JSON.stringify(aiResult.ai_result ?? {}))
+//       formData.append('defect_detected', aiResult.defect_detected ? 'true' : 'false')
+//       formData.append('ml_model_used', aiResult.model_name ?? '')
+//       formData.append('ml_model_version', aiResult.model_version ?? '')
+//     }
+//     selectedFiles.value.forEach(f => formData.append('images', f.file))
+
+//     const res = await createGrading(formData)
+//     const saved = res.data
+
+//     // ✅ Tutup modal SEBELUM refresh — tidak ada balapan state
+//     closeModal()
+
+//     // ✅ Toast dengan info grading yang baru masuk
+//     showToast(
+//       'success',
+//       'Grading berhasil disimpan',
+//       `${saved?.grading_code ?? ''} · Grade ${saved?.grade ?? (aiResult?.grade ?? modalForm.grade)}`
+//     )
+
+//     // Refresh di background — user sudah lihat toast, tidak perlu nunggu
+//     await Promise.all([loadBatch(), loadGradings()])
+
+//   } catch (err) {
+//     modalError.value = err.response?.data?.message || err.message || 'Gagal menyimpan grading.'
+//   } finally {
+//     isSubmittingGrading.value = false
+//     isProcessingAI.value = false
+//   }
+// }
 
 // ─── Data ─────────────────────────────────────────────────
 const loadBatch = async () => { const res = await getBatchById(batchId); batch.value = res.data }
