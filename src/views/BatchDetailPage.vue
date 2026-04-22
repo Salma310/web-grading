@@ -403,7 +403,7 @@ const fileInput = ref(null)
 const selectedFiles = ref([])
 const modalForm = reactive({ grade: '' })
 const imagePreview = reactive({ show: false, urls: [], index: 0 })
-const { pollingStatus, pollingError, startPolling } = useGradingPoller()
+const {  startPolling } = useGradingPoller()
 
 // ─── Toast ────────────────────────────────────────────────
 const toast = reactive({ show: false, type: 'success', title: '', body: '' })
