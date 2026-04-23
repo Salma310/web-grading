@@ -15,7 +15,7 @@
         </DropdownMenu>
       </div>
 
-      <div class="relative max-h-[195px]">
+      <div class="relative">
         <div v-if="loading" class="flex items-center justify-center h-[195px]">
           <svg class="animate-spin h-6 w-6 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -24,13 +24,15 @@
         </div>
         <div v-else class="h-full">
           <div class="radial-bar-chart">
-            <VueApexCharts type="radialBar" height="330" :options="chartOptions" :series="series" />
+            <VueApexCharts type="radialBar" height="280" :options="chartOptions" :series="series" />
           </div>
         </div>
+      </div>
+
+      <div v-if="!loading" class="flex justify-center -mt-2 mb-3">
         <span
-          v-if="!loading"
           :class="[
-            'absolute left-1/2 top-[85%] -translate-x-1/2 -translate-y-[85%] rounded-full px-3 py-1 text-xs font-medium',
+            'rounded-full px-3 py-1 text-xs font-medium',
             gradingGrowth >= 0
               ? 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500'
               : 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500',
@@ -130,7 +132,7 @@ export default defineComponent({
             value: {
               fontSize: '36px',
               fontWeight: '600',
-              offsetY: 60,
+              offsetY: -10,
               color: '#1D2939',
               formatter: (val: number) => val.toFixed(1) + '%',
             },

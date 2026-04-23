@@ -8,7 +8,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Ecommerce',
+      name: 'Ecommerce2',
       component: () => import('../views/Ecommerce.vue'),
       meta: {
         title: 'Dashboard',
@@ -30,6 +30,21 @@ const router = createRouter({
         title: 'Grading Data',
       },
     },
+    {
+      path: '/farmer',
+      name: 'Farmer Data',
+      component: () => import('../views/FarmerList.vue'),
+      meta: {
+        title: 'Farmer Data',
+      },
+    },
+    {
+    path: '/farmer/:id',
+    name: 'Farmer Detail',
+    component: () => import('../views/FarmerDetail.vue'),
+    meta: { requiresAuth: true },
+  },
+    
     {
     path: '/batches',
     name: 'BatchList',

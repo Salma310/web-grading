@@ -269,12 +269,17 @@ const menuGroups = [
         name: "Grading Data",
         path: "/gradingdata",
       },
-      
       {
-        icon: CalenderIcon,
-        name: "Calendar",
-        path: "/calendar",
+        icon: TableIcon,
+        name: "Farmer ",
+        path: "/farmer",
       },
+      
+      // {
+      //   icon: CalenderIcon,
+      //   name: "Calendar",
+      //   path: "/calendar",
+      // },
       {
         icon: UserCircleIcon,
         name: "User Profile",
@@ -303,40 +308,40 @@ const menuGroups = [
       // },
     ],
   },
-  {
-    title: "Others",
-    items: [
-      {
-        icon: PieChartIcon,
-        name: "Charts",
-        subItems: [
-          { name: "Line Chart", path: "/line-chart", pro: false },
-          { name: "Bar Chart", path: "/bar-chart", pro: false },
-        ],
-      },
-      {
-        icon: BoxCubeIcon,
-        name: "Ui Elements",
-        subItems: [
-          { name: "Alerts", path: "/alerts", pro: false },
-          { name: "Avatars", path: "/avatars", pro: false },
-          { name: "Badge", path: "/badge", pro: false },
-          { name: "Buttons", path: "/buttons", pro: false },
-          { name: "Images", path: "/images", pro: false },
-          { name: "Videos", path: "/videos", pro: false },
-        ],
-      },
-      {
-        icon: PlugInIcon,
-        name: "Authentication",
-        subItems: [
-          { name: "Signin", path: "/signin", pro: false },
-          { name: "Signup", path: "/signup", pro: false },
-        ],
-      },
-      // ... Add other menu items here
-    ],
-  },
+  // {
+  //   title: "Others",
+  //   items: [
+  //     {
+  //       icon: PieChartIcon,
+  //       name: "Charts",
+  //       subItems: [
+  //         { name: "Line Chart", path: "/line-chart", pro: false },
+  //         { name: "Bar Chart", path: "/bar-chart", pro: false },
+  //       ],
+  //     },
+  //     {
+  //       icon: BoxCubeIcon,
+  //       name: "Ui Elements",
+  //       subItems: [
+  //         { name: "Alerts", path: "/alerts", pro: false },
+  //         { name: "Avatars", path: "/avatars", pro: false },
+  //         { name: "Badge", path: "/badge", pro: false },
+  //         { name: "Buttons", path: "/buttons", pro: false },
+  //         { name: "Images", path: "/images", pro: false },
+  //         { name: "Videos", path: "/videos", pro: false },
+  //       ],
+  //     },
+  //     {
+  //       icon: PlugInIcon,
+  //       name: "Authentication",
+  //       subItems: [
+  //         { name: "Signin", path: "/signin", pro: false },
+  //         { name: "Signup", path: "/signup", pro: false },
+  //       ],
+  //     },
+  //     // ... Add other menu items here
+  //   ],
+  // },
 ];
 
 const isActive = (path) => route.path === path;
