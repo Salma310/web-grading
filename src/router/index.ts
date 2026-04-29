@@ -31,6 +31,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/qr',
+      name: 'QR Print',
+      component: () => import('../views/QRPrint.vue'), // Pastikan file ini ada di folder views
+      meta: {
+        title: 'QR Print',
+        requiresAuth: true, // Tambahkan jika hanya user login yang boleh akses
+      },
+    },
+    {
       path: '/farmer',
       name: 'Farmer Data',
       component: () => import('../views/FarmerList.vue'),
