@@ -597,120 +597,29 @@ const printStatusLabel = (status) => ({
 }[status] || status)
 
 // ─── Generate Print HTML ───────────────────────────────────
-const generatePrintHTML = (bundle, detail, qrImageUrl) => {
-  const grade = detail?.grade || bundle?.grade || ''
-  const lotCode = detail?.batch?.lot_code || bundle?.batch?.lot_code || ''
-  const farmerName = detail?.farmer_name || bundle?.farmer_name || detail?.batch?.farmer?.name || ''
-  const fruitType = detail?.fruit_type || bundle?.fruit_type || detail?.batch?.fruit_type || ''
-  const harvestDate = formatDate(detail?.harvest_date || bundle?.harvest_date || detail?.batch?.harvest_date)
-  const village = detail?.origin_village || ''
-  const city = detail?.origin_city || ''
-  const totalFruits = detail?.total_fruits || bundle?.total_fruits || 0
-  const totalWeight = detail?.total_weight ? `${detail.total_weight.toFixed(1)} kg` : ''
-  const token = bundle?.qr_token || ''
-
-  const gradeColors = {
-    A: { bg: '#f0fdf4', border: '#86efac', text: '#15803d', badge: '#dcfce7' },
-    B: { bg: '#eff6ff', border: '#93c5fd', text: '#1d4ed8', badge: '#dbeafe' },
-    C: { bg: '#fefce8', border: '#fde047', text: '#854d0e', badge: '#fef9c3' },
-    REJECT: { bg: '#fff1f2', border: '#fca5a5', text: '#b91c1c', badge: '#fee2e2' },
-  }
-  const color = gradeColors[grade] || { bg: '#f9fafb', border: '#e5e7eb', text: '#374151', badge: '#f3f4f6' }
-
+const generatePrintHTML = (bundle, qrImageUrl) => {
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Sticker QR - Grade ${grade} - ${lotCode}</title>
+  <title>QR Sticker</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: white; }
+    body { background: white; }
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .no-print { display: none; }
-      @page { margin: 5mm; size: 100mm 150mm; }
+      @page { margin: 0; size: 30mm 30mm; }
     }
     .sticker {
-      width: 100mm; min-height: 140mm;
-      border: 2px solid ${color.border};
-      border-radius: 8px;
-      background: ${color.bg};
-      padding: 6mm;
-      display: flex; flex-direction: column; gap: 4mm;
-      page-break-inside: avoid;
-    }
-    .header {
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1.5px solid ${color.border}; padding-bottom: 3mm;
-    }
-    .brand { font-size: 9pt; font-weight: 700; color: #374151; letter-spacing: 0.05em; }
-    .lot { font-size: 7pt; font-family: monospace; color: #6b7280; margin-top: 1mm; }
-    .grade-badge {
-      display: flex; align-items: center; justify-content: center;
-      width: 14mm; height: 14mm; border-radius: 50%;
-      background: ${color.badge}; border: 2px solid ${color.border};
-      font-size: 14pt; font-weight: 900; color: ${color.text};
-    }
-    .qr-section {
+      width: 30mm; height: 30mm;
       display: flex; align-items: center; justify-content: center;
     }
-    .qr-section img { width: 35mm; height: 35mm; border-radius: 4px; }
-    .info-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 2mm;
-    }
-    .info-item { }
-    .info-label { font-size: 6pt; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5mm; }
-    .info-value { font-size: 8pt; font-weight: 600; color: #1f2937; }
-    .grade-bar {
-      background: ${color.badge}; border: 1.5px solid ${color.border};
-      border-radius: 4px; padding: 3mm; text-align: center;
-    }
-    .grade-bar .label { font-size: 7pt; color: ${color.text}; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
-    .grade-bar .value { font-size: 20pt; font-weight: 900; color: ${color.text}; line-height: 1.1; }
-    .footer { border-top: 1px dashed ${color.border}; padding-top: 3mm; }
-    .token { font-size: 5.5pt; font-family: monospace; color: #9ca3af; text-align: center; word-break: break-all; }
+    img { width: 28mm; height: 28mm; object-fit: contain; display: block; }
   </style>
 </head>
 <body>
   <div class="sticker">
-    <div class="header">
-      <div>
-        <div class="brand">🌿 AgriGrade System</div>
-        <div class="lot">${lotCode}</div>
-      </div>
-      <div class="grade-badge">${grade === 'REJECT' ? 'R' : grade}</div>
-    </div>
-
-    <div class="grade-bar">
-      <div class="label">Grade Buah</div>
-      <div class="value">${grade}</div>
-    </div>
-
-    ${qrImageUrl ? `<div class="qr-section"><img src="${qrImageUrl}" alt="QR Code"/></div>` : ''}
-
-    <div class="info-grid">
-      <div class="info-item">
-        <div class="info-label">Petani</div>
-        <div class="info-value">${farmerName}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Jenis Buah</div>
-        <div class="info-value">${fruitType}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Tanggal Panen</div>
-        <div class="info-value">${harvestDate}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Total Buah</div>
-        <div class="info-value">${totalFruits} buah${totalWeight ? ` · ${totalWeight}` : ''}</div>
-      </div>
-      ${village ? `<div class="info-item"><div class="info-label">Asal</div><div class="info-value">${village}${city ? ', ' + city : ''}</div></div>` : ''}
-    </div>
-
-    <div class="footer">
-      <div class="token">Token: ${token}</div>
-    </div>
+    ${qrImageUrl ? `<img src="${qrImageUrl}" alt="QR"/>` : ''}
   </div>
 </body>
 </html>`
@@ -718,7 +627,7 @@ const generatePrintHTML = (bundle, detail, qrImageUrl) => {
 
 // ─── Execute Print ────────────────────────────────────────
 const executePrint = async (bundle, detail, qrImageUrl, printedById = null) => {
-  const html = generatePrintHTML(bundle, detail, qrImageUrl)
+  const html = generatePrintHTML(bundle, qrImageUrl)
   const frame = printFrame.value
   if (!frame) return
 
