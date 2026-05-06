@@ -63,7 +63,7 @@
 
             <div class="overflow-y-auto flex-1">
               <div v-if="detailModal.loading" class="flex items-center justify-center py-16">
-                <svg class="animate-spin h-6 w-6 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin h-6 w-6 text-brand-500" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
@@ -72,29 +72,28 @@
               <template v-else-if="detailModal.detail">
                 <div class="px-6 py-5 space-y-5">
 
-                  <!-- QR Image + Batch Info side by side -->
+                  <!-- QR Image + Batch Info -->
                   <div class="flex gap-5 flex-col sm:flex-row">
-                    <!-- QR Code -->
+
+                    <!-- QR Code image -->
                     <div class="flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-800/50 sm:w-48 shrink-0">
                       <div v-if="detailModal.qrLoading" class="flex h-36 w-36 items-center justify-center">
-                        <svg class="animate-spin h-6 w-6 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg class="animate-spin h-6 w-6 text-brand-500" fill="none" viewBox="0 0 24 24">
                           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                         </svg>
                       </div>
                       <img v-else-if="detailModal.qrImageUrl"
                         :src="detailModal.qrImageUrl"
-                        class="h-36 w-36 rounded-lg object-contain border border-gray-200 dark:border-gray-700"/>
+                        class="h-36 w-36 rounded-lg object-contain border border-gray-200 dark:border-gray-700" />
                       <div v-else class="flex h-36 w-36 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
                         <svg class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
                         </svg>
                       </div>
-                      <p class="mt-2 text-xs font-medium text-center"
-                        :class="gradeTextClass(detailModal.detail.grade)">
+                      <p class="mt-2 text-xs font-medium text-center" :class="gradeTextClass(detailModal.detail.grade)">
                         Grade {{ detailModal.detail.grade }}
                       </p>
-                      <!-- Status badge -->
                       <span class="mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
                         :class="detailModal.detail.qr_is_active
                           ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
@@ -162,7 +161,7 @@
                             {{ printStatusLabel(detailModal.detail.print_status) }}
                           </span>
                           <div v-if="detailModal.detail.print_count > 0" class="text-xs text-gray-400">
-                            Dicetak {{ detailModal.detail.print_count }}× 
+                            Dicetak {{ detailModal.detail.print_count }}×
                             <span v-if="detailModal.detail.printed_at">· {{ formatDate(detailModal.detail.printed_at) }}</span>
                           </div>
                         </div>
@@ -170,10 +169,10 @@
                     </div>
                   </div>
 
-                  <!-- Gradings in this bundle -->
+                  <!-- Grading results -->
                   <div v-if="detailModal.detail.grading_results?.length > 0">
                     <p class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Grading dalam Bundle ({{ detailModal.detail.grading_results.length }} buah)
+                      Grading dalam Bundle ({{ detailModal.detail.grading_results.length }} item)
                     </p>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800">
                       <table class="w-full text-xs">
@@ -202,7 +201,9 @@
                             </td>
                             <td class="px-4 py-2">
                               <span class="rounded px-1.5 py-0.5"
-                                :class="gr.grading_method === 'AI' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800'">
+                                :class="gr.grading_method === 'AI'
+                                  ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
+                                  : 'bg-gray-100 text-gray-500 dark:bg-gray-800'">
                                 {{ gr.grading_method || 'AI' }}
                               </span>
                             </td>
@@ -236,6 +237,7 @@
                       </div>
                     </div>
                   </div>
+
                 </div>
               </template>
             </div>
@@ -253,7 +255,7 @@
                   </svg>
                   Nonaktifkan QR
                 </button>
-                <!-- Download -->
+                <!-- Download QR image -->
                 <a v-if="detailModal.qrImageUrl" :href="detailModal.qrImageUrl" download
                   class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-brand-300 hover:text-brand-600 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
                   <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
@@ -262,29 +264,25 @@
                   Download PNG
                 </a>
               </div>
-              <!-- Print Button -->
+
+              <!-- Print Sticker — buka tab baru ke QRPrintView -->
               <button
-                @click="handlePrint(detailModal.data, detailModal.detail, detailModal.qrImageUrl)"
-                :disabled="detailModal.printing"
-                class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-60 transition-colors">
-                <svg v-if="detailModal.printing" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                @click="openPrintTab(detailModal.data)"
+                class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                  <path d="M5 7V4h10v3M5 16H3a1 1 0 01-1-1V9a1 1 0 011-1h14a1 1 0 011 1v6a1 1 0 01-1 1h-2M5 12h10v4H5v-4z"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <svg v-else width="14" height="14" viewBox="0 0 20 20" fill="none">
-                  <path d="M5 7V4h10v3M5 16H3a1 1 0 01-1-1V9a1 1 0 011-1h14a1 1 0 011 1v6a1 1 0 01-1 1h-2M5 12h10v4H5v-4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                {{ detailModal.printing ? 'Mencetak...' : 'Print Sticker' }}
+                Print Sticker
               </button>
             </div>
+
           </div>
         </div>
       </Transition>
     </Teleport>
 
-    <!-- ─── Print Frame (hidden) ──────────────────────────── -->
-    <iframe ref="printFrame" class="hidden" title="print-frame"></iframe>
-
+    <!-- ─── Main Content ──────────────────────────────────── -->
     <div class="space-y-5 sm:space-y-6">
 
       <!-- Stats -->
@@ -307,7 +305,7 @@
         </div>
       </div>
 
-      <!-- Filter + Table Card -->
+      <!-- Filter + Table -->
       <div class="rounded-2xl border border-gray-100 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
 
         <!-- Toolbar -->
@@ -317,13 +315,13 @@
             <p class="mt-0.5 text-sm text-gray-400">Keranjang per grade dari semua batch tertutup</p>
           </div>
           <div class="flex items-center gap-3 flex-wrap">
-            <!-- Search lot code -->
+            <!-- Search -->
             <div class="relative">
               <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="14" height="14" fill="none" viewBox="0 0 20 20">
                 <path d="M9 17A8 8 0 109 1a8 8 0 000 16zm11 2l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
               <input v-model="searchQuery" type="text" placeholder="Cari lot code / token..."
-                class="h-9 w-56 rounded-lg border border-gray-200 bg-transparent pl-9 pr-3 text-sm text-gray-600 placeholder:text-gray-300 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-400"/>
+                class="h-9 w-56 rounded-lg border border-gray-200 bg-transparent pl-9 pr-3 text-sm text-gray-600 placeholder:text-gray-300 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-400" />
             </div>
             <!-- Grade filter -->
             <div class="relative">
@@ -361,7 +359,7 @@
 
         <!-- Loading -->
         <div v-if="isLoading" class="flex items-center justify-center py-16">
-          <svg class="animate-spin h-6 w-6 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg class="animate-spin h-6 w-6 text-brand-500" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
           </svg>
@@ -369,7 +367,8 @@
         </div>
 
         <!-- Empty -->
-        <div v-else-if="filteredBundles.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
+        <div v-else-if="filteredBundles.length === 0"
+          class="flex flex-col items-center justify-center py-16 text-center">
           <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
             <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -398,7 +397,6 @@
               <tr v-for="bundle in filteredBundles" :key="bundle.id"
                 class="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
 
-                <!-- Grade -->
                 <td class="px-6 py-4">
                   <span class="inline-flex items-center justify-center h-9 w-9 rounded-full text-sm font-bold"
                     :class="gradeBadgeClass(bundle.grade)">
@@ -406,13 +404,11 @@
                   </span>
                 </td>
 
-                <!-- Batch Info -->
                 <td class="px-6 py-4">
                   <p class="font-mono text-xs font-medium text-gray-700 dark:text-gray-300">{{ bundle.batch?.lot_code }}</p>
                   <p class="mt-0.5 text-xs text-gray-400">{{ bundle.fruit_type || bundle.batch?.fruit_type }}</p>
                 </td>
 
-                <!-- Farmer & Origin -->
                 <td class="px-6 py-4">
                   <p class="font-medium text-gray-700 dark:text-gray-300 text-sm">{{ bundle.farmer_name || bundle.batch?.farmer?.name }}</p>
                   <p class="text-xs text-gray-400">
@@ -421,20 +417,17 @@
                   </p>
                 </td>
 
-                <!-- Fruits -->
                 <td class="px-6 py-4">
                   <span class="text-lg font-bold text-gray-700 dark:text-gray-300">{{ bundle.total_fruits }}</span>
                   <span class="ml-1 text-xs text-gray-400">buah</span>
                   <p v-if="bundle.total_weight" class="text-xs text-gray-400">{{ bundle.total_weight.toFixed(1) }} kg</p>
                 </td>
 
-                <!-- QR Token -->
                 <td class="px-6 py-4">
                   <p class="font-mono text-xs text-gray-500 dark:text-gray-400">{{ bundle.qr_token?.slice(0, 16) }}…</p>
                   <p class="mt-0.5 text-xs text-gray-400">{{ formatDate(bundle.harvest_date || bundle.batch?.harvest_date) }}</p>
                 </td>
 
-                <!-- QR Active Status -->
                 <td class="px-6 py-4">
                   <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
                     :class="bundle.qr_is_active
@@ -446,21 +439,16 @@
                   </span>
                 </td>
 
-                <!-- Print Status -->
                 <td class="px-6 py-4">
-                  <div>
-                    <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium"
-                      :class="printStatusClass(bundle.print_status)">
-                      {{ printStatusLabel(bundle.print_status) }}
-                    </span>
-                    <p v-if="bundle.print_count > 0" class="mt-0.5 text-xs text-gray-400">{{ bundle.print_count }}× cetak</p>
-                  </div>
+                  <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium"
+                    :class="printStatusClass(bundle.print_status)">
+                    {{ printStatusLabel(bundle.print_status) }}
+                  </span>
+                  <p v-if="bundle.print_count > 0" class="mt-0.5 text-xs text-gray-400">{{ bundle.print_count }}× cetak</p>
                 </td>
 
-                <!-- Actions -->
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
-                    <!-- Detail -->
                     <button @click="openDetail(bundle)"
                       class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-brand-300 hover:text-brand-600 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
                       <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
@@ -469,16 +457,12 @@
                       </svg>
                       Detail
                     </button>
-                    <!-- Quick Print -->
-                    <button @click="quickPrint(bundle)"
-                      :disabled="printingId === bundle.id"
-                      class="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
-                      <svg v-if="printingId === bundle.id" class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                      </svg>
-                      <svg v-else width="12" height="12" viewBox="0 0 20 20" fill="none">
-                        <path d="M5 7V4h10v3M5 16H3a1 1 0 01-1-1V9a1 1 0 011-1h14a1 1 0 011 1v6a1 1 0 01-1 1h-2M5 12h10v4H5v-4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- Print → buka tab baru QRPrintView -->
+                    <button @click="openPrintTab(bundle)"
+                      class="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-600 transition-colors">
+                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+                        <path d="M5 7V4h10v3M5 16H3a1 1 0 01-1-1V9a1 1 0 011-1h14a1 1 0 011 1v6a1 1 0 01-1 1h-2M5 12h10v4H5v-4z"
+                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                       Print
                     </button>
@@ -490,6 +474,7 @@
         </div>
       </div>
     </div>
+
   </AdminLayout>
 </template>
 
@@ -497,22 +482,15 @@
 import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
-import { getQRImage, getQRDetail, getQRLogs, markAsPrinted, deactivateQR } from '@/services/qrService'
+import { getQRImage, getQRDetail, getQRLogs, deactivateQR } from '@/services/qrService'
 import { getAllBundles } from '@/services/batchService'
 
-// ─── NOTE: Ganti ini dengan service yang sesuai di project Anda ──────────────
-// Jika ada endpoint GET /bundles atau GET /batches (dengan include bundles), pakai itu.
-// Sementara ini, bundle list diambil dari batches yang sudah CLOSED.
-// ─────────────────────────────────────────────────────────────────────────────
-
 const currentPageTitle = ref('QR Management')
-const isLoading = ref(false)
-const bundles = ref([])
-const searchQuery = ref('')
-const filterGrade = ref('')
-const filterPrint = ref('')
-const printingId = ref(null)
-const printFrame = ref(null)
+const isLoading        = ref(false)
+const bundles          = ref([])
+const searchQuery      = ref('')
+const filterGrade      = ref('')
+const filterPrint      = ref('')
 
 // ─── Toast ────────────────────────────────────────────────
 const toast = reactive({ show: false, type: 'success', title: '', body: '' })
@@ -522,32 +500,30 @@ const showToast = (type, title, body = '') => {
   Object.assign(toast, { show: true, type, title, body })
   toastTimer = setTimeout(() => { toast.show = false }, 4000)
 }
-onUnmounted(() => { if (toastTimer) clearTimeout(toastTimer) })
 
 // ─── Detail Modal ─────────────────────────────────────────
 const detailModal = reactive({
   show: false,
-  data: null,          // bundle row dari list
-  detail: null,        // full detail dari API
+  data: null,
+  detail: null,
   logs: [],
   loading: false,
   qrLoading: false,
   qrImageUrl: '',
-  printing: false,
   deactivating: false,
 })
 
 // ─── Stats ────────────────────────────────────────────────
 const stats = computed(() => ({
-  total: bundles.value.length,
-  active: bundles.value.filter(b => b.qr_is_active).length,
-  printed: bundles.value.filter(b => b.print_status !== 'NOT_PRINTED').length,
+  total:      bundles.value.length,
+  active:     bundles.value.filter(b => b.qr_is_active).length,
+  printed:    bundles.value.filter(b => b.print_status !== 'NOT_PRINTED').length,
   notPrinted: bundles.value.filter(b => b.print_status === 'NOT_PRINTED').length,
 }))
 
 // ─── Filtered ─────────────────────────────────────────────
-const filteredBundles = computed(() => {
-  return bundles.value.filter(b => {
+const filteredBundles = computed(() =>
+  bundles.value.filter(b => {
     const q = searchQuery.value.toLowerCase()
     const matchSearch = !q ||
       b.qr_token?.toLowerCase().includes(q) ||
@@ -557,217 +533,105 @@ const filteredBundles = computed(() => {
     const matchPrint = !filterPrint.value || b.print_status === filterPrint.value
     return matchSearch && matchGrade && matchPrint
   })
-})
+)
 
 // ─── Helpers ──────────────────────────────────────────────
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
-const formatDateTime = (d) => d ? new Date(d).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'
+const formatDate = (d) =>
+  d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
+const formatDateTime = (d) =>
+  d ? new Date(d).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'
 
 const gradeBadgeClass = (grade) => ({
-  A: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  B: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  C: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+  A:      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  B:      'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  C:      'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
   REJECT: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
 }[grade] || 'bg-gray-100 text-gray-500')
 
 const gradeTextClass = (grade) => ({
-  A: 'text-green-600 dark:text-green-400',
-  B: 'text-blue-600 dark:text-blue-400',
-  C: 'text-yellow-600 dark:text-yellow-400',
+  A:      'text-green-600 dark:text-green-400',
+  B:      'text-blue-600 dark:text-blue-400',
+  C:      'text-yellow-600 dark:text-yellow-400',
   REJECT: 'text-red-600 dark:text-red-400',
 }[grade] || 'text-gray-500')
 
 const gradeClass = (grade) => ({
-  A: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  B: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  C: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+  A:      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  B:      'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  C:      'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
   REJECT: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
 }[grade] || 'bg-gray-100 text-gray-500')
 
 const printStatusClass = (status) => ({
   NOT_PRINTED: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  PRINTED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  REPRINTED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  PRINTED:     'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  REPRINTED:   'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
 }[status] || 'bg-gray-100 text-gray-500')
 
 const printStatusLabel = (status) => ({
   NOT_PRINTED: 'Belum Cetak',
-  PRINTED: 'Sudah Cetak',
-  REPRINTED: 'Cetak Ulang',
+  PRINTED:     'Sudah Cetak',
+  REPRINTED:   'Cetak Ulang',
 }[status] || status)
 
-// ─── Generate Print HTML ───────────────────────────────────
-const generatePrintHTML = (bundle, detail, qrImageUrl) => {
-  const grade = detail?.grade || bundle?.grade || ''
-  const lotCode = detail?.batch?.lot_code || bundle?.batch?.lot_code || ''
-  const farmerName = detail?.farmer_name || bundle?.farmer_name || detail?.batch?.farmer?.name || ''
-  const fruitType = detail?.fruit_type || bundle?.fruit_type || detail?.batch?.fruit_type || ''
-  const harvestDate = formatDate(detail?.harvest_date || bundle?.harvest_date || detail?.batch?.harvest_date)
-  const village = detail?.origin_village || ''
-  const city = detail?.origin_city || ''
-  const totalFruits = detail?.total_fruits || bundle?.total_fruits || 0
-  const totalWeight = detail?.total_weight ? `${detail.total_weight.toFixed(1)} kg` : ''
-  const token = bundle?.qr_token || ''
-
-  const gradeColors = {
-    A: { bg: '#f0fdf4', border: '#86efac', text: '#15803d', badge: '#dcfce7' },
-    B: { bg: '#eff6ff', border: '#93c5fd', text: '#1d4ed8', badge: '#dbeafe' },
-    C: { bg: '#fefce8', border: '#fde047', text: '#854d0e', badge: '#fef9c3' },
-    REJECT: { bg: '#fff1f2', border: '#fca5a5', text: '#b91c1c', badge: '#fee2e2' },
-  }
-  const color = gradeColors[grade] || { bg: '#f9fafb', border: '#e5e7eb', text: '#374151', badge: '#f3f4f6' }
-
-  return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Sticker QR - Grade ${grade} - ${lotCode}</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: white; }
-    @media print {
-      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .no-print { display: none; }
-      @page { margin: 5mm; size: 100mm 150mm; }
-    }
-    .sticker {
-      width: 100mm; min-height: 140mm;
-      border: 2px solid ${color.border};
-      border-radius: 8px;
-      background: ${color.bg};
-      padding: 6mm;
-      display: flex; flex-direction: column; gap: 4mm;
-      page-break-inside: avoid;
-    }
-    .header {
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1.5px solid ${color.border}; padding-bottom: 3mm;
-    }
-    .brand { font-size: 9pt; font-weight: 700; color: #374151; letter-spacing: 0.05em; }
-    .lot { font-size: 7pt; font-family: monospace; color: #6b7280; margin-top: 1mm; }
-    .grade-badge {
-      display: flex; align-items: center; justify-content: center;
-      width: 14mm; height: 14mm; border-radius: 50%;
-      background: ${color.badge}; border: 2px solid ${color.border};
-      font-size: 14pt; font-weight: 900; color: ${color.text};
-    }
-    .qr-section {
-      display: flex; align-items: center; justify-content: center;
-    }
-    .qr-section img { width: 35mm; height: 35mm; border-radius: 4px; }
-    .info-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 2mm;
-    }
-    .info-item { }
-    .info-label { font-size: 6pt; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5mm; }
-    .info-value { font-size: 8pt; font-weight: 600; color: #1f2937; }
-    .grade-bar {
-      background: ${color.badge}; border: 1.5px solid ${color.border};
-      border-radius: 4px; padding: 3mm; text-align: center;
-    }
-    .grade-bar .label { font-size: 7pt; color: ${color.text}; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
-    .grade-bar .value { font-size: 20pt; font-weight: 900; color: ${color.text}; line-height: 1.1; }
-    .footer { border-top: 1px dashed ${color.border}; padding-top: 3mm; }
-    .token { font-size: 5.5pt; font-family: monospace; color: #9ca3af; text-align: center; word-break: break-all; }
-  </style>
-</head>
-<body>
-  <div class="sticker">
-    <div class="header">
-      <div>
-        <div class="brand">🌿 AgriGrade System</div>
-        <div class="lot">${lotCode}</div>
-      </div>
-      <div class="grade-badge">${grade === 'REJECT' ? 'R' : grade}</div>
-    </div>
-
-    <div class="grade-bar">
-      <div class="label">Grade Buah</div>
-      <div class="value">${grade}</div>
-    </div>
-
-    ${qrImageUrl ? `<div class="qr-section"><img src="${qrImageUrl}" alt="QR Code"/></div>` : ''}
-
-    <div class="info-grid">
-      <div class="info-item">
-        <div class="info-label">Petani</div>
-        <div class="info-value">${farmerName}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Jenis Buah</div>
-        <div class="info-value">${fruitType}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Tanggal Panen</div>
-        <div class="info-value">${harvestDate}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Total Buah</div>
-        <div class="info-value">${totalFruits} buah${totalWeight ? ` · ${totalWeight}` : ''}</div>
-      </div>
-      ${village ? `<div class="info-item"><div class="info-label">Asal</div><div class="info-value">${village}${city ? ', ' + city : ''}</div></div>` : ''}
-    </div>
-
-    <div class="footer">
-      <div class="token">Token: ${token}</div>
-    </div>
-  </div>
-</body>
-</html>`
-}
-
-// ─── Execute Print ────────────────────────────────────────
-const executePrint = async (bundle, detail, qrImageUrl, printedById = null) => {
-  const html = generatePrintHTML(bundle, detail, qrImageUrl)
-  const frame = printFrame.value
-  if (!frame) return
-
-  frame.srcdoc = html
-  await new Promise(resolve => frame.addEventListener('load', resolve, { once: true }))
-  frame.contentWindow.print()
-
-  // Mark as printed on backend
+// ─── Load Data (silent = tidak tampil loading spinner) ────
+const loadBundles = async (silent = false) => {
+  if (!silent) isLoading.value = true
   try {
-    await markAsPrinted(bundle.qr_token, printedById || 'system')
-    // Update local state
-    const b = bundles.value.find(x => x.id === bundle.id)
-    if (b) {
-      b.print_status = b.print_status === 'NOT_PRINTED' ? 'PRINTED' : 'REPRINTED'
-      b.print_count = (b.print_count || 0) + 1
+    const res = await getAllBundles()
+    bundles.value = res.data
+
+    // Sync detailModal jika sedang terbuka
+    if (detailModal.show && detailModal.data) {
+      const updated = res.data.find(b => b.id === detailModal.data.id)
+      if (updated) {
+        detailModal.data = updated
+        if (detailModal.detail) {
+          detailModal.detail.print_status = updated.print_status
+          detailModal.detail.print_count  = updated.print_count
+        }
+      }
     }
   } catch (err) {
-    console.warn('markAsPrinted failed:', err)
-  }
-}
-
-// ─── Quick Print (from table row) ─────────────────────────
-const quickPrint = async (bundle) => {
-  printingId.value = bundle.id
-  try {
-    const [detailRes, qrRes] = await Promise.all([
-      getQRDetail(bundle.qr_token),
-      getQRImage(bundle.qr_token),
-    ])
-    const detail = detailRes.data
-    const qrImageUrl = qrRes.data.image_url
-    await executePrint(bundle, detail, qrImageUrl)
-    showToast('success', 'Sticker dicetak', `Grade ${bundle.grade} · ${bundle.batch?.lot_code}`)
-  } catch (err) {
-    showToast('error', 'Gagal mencetak', err.message || 'Terjadi kesalahan saat mencetak')
+    if (!silent) showToast('error', 'Gagal memuat data', err.message)
   } finally {
-    printingId.value = null
+    if (!silent) isLoading.value = false
   }
+}
+
+// ─── Refresh saat tab ini kembali aktif ───────────────────
+const handleFocus = () => {
+  loadBundles(true) // silent refresh, tidak tampil spinner
+}
+
+// ─── Polling setiap 15 detik ──────────────────────────────
+let pollingTimer = null
+const startPolling = () => {
+  pollingTimer = setInterval(() => {
+    loadBundles(true) // silent
+  }, 15000)
+}
+const stopPolling = () => {
+  if (pollingTimer) {
+    clearInterval(pollingTimer)
+    pollingTimer = null
+  }
+}
+
+// ─── Buka halaman print di tab baru ───────────────────────
+const openPrintTab = (bundle) => {
+  window.open(`/qr/${bundle.qr_token}/print`, '_blank')
 }
 
 // ─── Open Detail Modal ────────────────────────────────────
 const openDetail = async (bundle) => {
-  detailModal.data = bundle
-  detailModal.detail = null
-  detailModal.logs = []
+  detailModal.data       = bundle
+  detailModal.detail     = null
+  detailModal.logs       = []
   detailModal.qrImageUrl = ''
-  detailModal.loading = true
-  detailModal.qrLoading = true
-  detailModal.show = true
+  detailModal.loading    = true
+  detailModal.qrLoading  = true
+  detailModal.show       = true
 
   try {
     const [detailRes, logsRes] = await Promise.all([
@@ -775,7 +639,7 @@ const openDetail = async (bundle) => {
       getQRLogs(bundle.qr_token),
     ])
     detailModal.detail = detailRes.data
-    detailModal.logs = logsRes.data || []
+    detailModal.logs   = logsRes.data || []
   } catch (err) {
     console.error('Failed to load detail:', err)
   } finally {
@@ -792,28 +656,10 @@ const openDetail = async (bundle) => {
   }
 }
 
-// ─── Print from Modal ─────────────────────────────────────
-const handlePrint = async (bundle, detail, qrImageUrl) => {
-  detailModal.printing = true
-  try {
-    await executePrint(bundle, detail, qrImageUrl)
-    // Refresh detail print status
-    if (detail) {
-      detail.print_status = detail.print_status === 'NOT_PRINTED' ? 'PRINTED' : 'REPRINTED'
-      detail.print_count = (detail.print_count || 0) + 1
-    }
-    showToast('success', 'Sticker dicetak', `Grade ${bundle.grade} · ${bundle.batch?.lot_code}`)
-  } catch (err) {
-    showToast('error', 'Gagal mencetak', err.message)
-  } finally {
-    detailModal.printing = false
-  }
-}
-
 // ─── Deactivate QR ────────────────────────────────────────
 const handleDeactivate = async (bundle) => {
   const reason = prompt('Alasan penonaktifan QR (opsional):')
-  if (reason === null) return // user cancel
+  if (reason === null) return
 
   detailModal.deactivating = true
   try {
@@ -829,24 +675,19 @@ const handleDeactivate = async (bundle) => {
   }
 }
 
-// ─── Load Data ────────────────────────────────────────────
-// Ambil bundles dari semua batch CLOSED.
-// Jika backend Anda punya endpoint GET /bundles, ganti logika ini.
-const loadBundles = async () => {
-  isLoading.value = true
-  try {
-    const res = await getAllBundles()
-    bundles.value = res.data
-  } catch (err) {
-    showToast('error', 'Gagal memuat data', err.message)
-  } finally {
-    isLoading.value = false
-  }
-}
+// ─── Lifecycle ────────────────────────────────────────────
+onMounted(() => {
+  loadBundles()
+  startPolling()
+  window.addEventListener('focus', handleFocus)
+})
 
-onMounted(loadBundles)
+onUnmounted(() => {
+  if (toastTimer) clearTimeout(toastTimer)
+  stopPolling()
+  window.removeEventListener('focus', handleFocus)
+})
 </script>
-
 <style scoped>
 .modal-enter-active, .modal-leave-active { transition: opacity 0.2s ease; }
 .modal-enter-from, .modal-leave-to { opacity: 0; }
