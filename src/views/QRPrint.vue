@@ -598,32 +598,261 @@ const printStatusLabel = (status) => ({
 
 // ─── Generate Print HTML ───────────────────────────────────
 const generatePrintHTML = (bundle, qrImageUrl) => {
-  return `<!DOCTYPE html>
+
+  const grade = bundle.grade?.toUpperCase()
+
+  let backgroundLabel = '/images/logo/label-gradec.png'
+
+  if (grade === 'A') {
+    backgroundLabel = '/images/logo/label-gradea.png'
+  } else if (grade === 'B') {
+    backgroundLabel = '/images/logo/label-gradeb.png'
+  } else if (grade === 'C') {
+    backgroundLabel = '/images/logo/label-gradec.png'
+  }
+
+  // jumlah stiker sesuai total buah
+  const totalSticker = bundle.total_fruits || 1
+
+  // data footer
+  const lotCode = bundle.batch?.lot_code || '-'
+
+  const farmerName =
+    bundle.farmer_name ||
+    bundle.batch?.farmer?.name ||
+    '-'
+
+  const landName =
+    bundle.origin_village ||
+    bundle.batch?.land?.location ||
+    '-'
+
+      // tanggal print
+  const printDate = new Date().toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  // generate semua sticker
+  const stickersHTML = Array.from({
+    length: totalSticker
+  })
+    .map(() => {
+      return `
+        <div class="sticker">
+
+          <!-- background -->
+          <img
+            src="${backgroundLabel}"
+            class="label-bg"
+            alt="label"
+          />
+
+          <!-- qr -->
+          ${
+            qrImageUrl
+              ? `<img src="${qrImageUrl}" class="qr" alt="QR"/>`
+              : ''
+          }
+
+        </div>
+      `
+    })
+    .join('')
+
+  return `
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <title>QR Sticker</title>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: white; }
-    @media print {
-      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      @page { margin: 0; size: 30mm 30mm; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+    body {
+
+      background: white;
+      font-family: Arial, sans-serif;
+
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    @page {
+
+      size: A4 landscape;
+      margin: 8mm;
+    }
+
+    /* HEADER */
+    .print-header {
+
+      margin-bottom: 6mm;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      font-size: 12px;
+    }
+
+    /* AREA STICKER */
+    .sheet {
+
+      display: flex;
+      flex-wrap: wrap;
+
+      gap: 3mm;
+
+      align-content: flex-start;
+
+      padding-bottom: 20mm;
+    }
+
+    /* STICKER */
     .sticker {
-      width: 30mm; height: 30mm;
-      display: flex; align-items: center; justify-content: center;
+
+      position: relative;
+
+      width: 80mm;
+      height: 30mm;
+
+      overflow: hidden;
+
+      page-break-inside: avoid;
     }
-    img { width: 28mm; height: 28mm; object-fit: contain; display: block; }
+
+    /* BACKGROUND */
+    .label-bg {
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: contain;
+
+      display: block;
+    }
+
+    /* QR */
+    .qr {
+
+      position: absolute;
+
+      width: 12.8mm;
+      height: 12.8mm;
+
+      left: 9.6mm;
+      top: 8.7mm;
+
+      object-fit: contain;
+    }
+
+    /* FOOTER HALAMAN */
+    .page-footer {
+
+      position: fixed;
+
+      bottom: 2mm;
+      left: 10mm;
+      right: 10mm;
+
+      border-top: 1px solid #ddd;
+
+      padding-top: 2mm;
+
+      font-size: 10px;
+
+      color: #555;
+
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+
+      background: white;
+    }
+
+    .footer-item strong {
+      color: #222;
+    }
+
   </style>
 </head>
+
 <body>
-  <div class="sticker">
-    ${qrImageUrl ? `<img src="${qrImageUrl}" alt="QR"/>` : ''}
+    <!-- HEADER -->
+  <div class="print-header">
+     <div class="header-right">
+      Dicetak: ${printDate}
+      · Total: ${totalSticker} stiker
+    </div>
+
   </div>
+
+  <!-- STICKER -->
+  <div class="sheet">
+    ${stickersHTML}
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+
+    <div class="footer-item">
+      <strong>Batch:</strong>
+      ${lotCode}
+    </div>
+
+    <div class="footer-item">
+      <strong>Petani:</strong>
+      ${farmerName}
+    </div>
+
+    <div class="footer-item">
+      <strong>Lahan:</strong>
+      ${landName}
+    </div>
+
+  </div>
+
 </body>
-</html>`
+</html>
+`
 }
+// const generatePrintHTML = (bundle, qrImageUrl) => {
+//   return `<!DOCTYPE html>
+// <html>
+// <head>
+//   <meta charset="utf-8">
+//   <title>QR Sticker</title>
+//   <style>
+//     * { margin: 0; padding: 0; box-sizing: border-box; }
+//     body { background: white; }
+//     @media print {
+//       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+//       @page { margin: 0; size: 30mm 30mm; }
+//     }
+//     .sticker {
+//       width: 30mm; height: 30mm;
+//       display: flex; align-items: center; justify-content: center;
+//     }
+//     img { width: 28mm; height: 28mm; object-fit: contain; display: block; }
+//   </style>
+// </head>
+// <body>
+//   <div class="sticker">
+//     ${qrImageUrl ? `<img src="${qrImageUrl}" alt="QR"/>` : ''}
+//   </div>
+// </body>
+// </html>`
+// }
 
 // ─── Execute Print ────────────────────────────────────────
 const executePrint = async (bundle, detail, qrImageUrl, printedById = null) => {
