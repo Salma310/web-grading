@@ -68,6 +68,11 @@ const router = createRouter({
       component: () => import('../views/QRPrint.vue'),
       meta: { title: 'QR Print', requiresAuth: true },
     },
+        {
+      path: '/qr/:token/print',
+      name: 'qr-print',
+      component: () => import('@/views/qr/QRPrintViewdetail.vue'),
+    },
     {
       path: '/farmer',
       name: 'Farmer Data',
