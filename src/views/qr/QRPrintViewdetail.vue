@@ -26,7 +26,6 @@
 
       <template v-else-if="bundleData">
 
-        <!-- Header card -->
         <div
           class="rounded-2xl border border-gray-100 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
           <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
@@ -118,11 +117,10 @@
           </div>
         </div>
 
-        <!-- ── Preview section ── -->
         <div v-if="isReady"
           class="rounded-2xl border border-gray-100 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
           <p class="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-400">
-            Preview — {{ QR_COLS }}×{{ QR_ROWS }} per halaman · QR {{ QR_SIZE_MM }}×{{ QR_SIZE_MM }} mm · Gap {{ GAP_MM
+            Preview — {{ QR_COLS }}×{{ QR_ROWS }} per halaman · QR {{ CELL_W_MM }}×{{ CELL_H_MM }} mm · Gap {{ GAP_MM
             }} mm · Kertas {{ PAPER_W_MM / 10 }}×{{ PAPER_H_MM / 10 }} cm
           </p>
           <div class="flex flex-wrap gap-6">
@@ -130,33 +128,17 @@
               class="flex-shrink-0 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 p-3">
               <p class="mb-2 text-center text-xs text-gray-400">Hal. {{ pi + 1 }}</p>
 
-              <!-- Paper container -->
               <div class="relative bg-white shadow-sm overflow-hidden" :style="{
                 width: `${PAPER_W_MM * PREVIEW_SCALE}px`,
                 height: `${PAPER_H_MM * PREVIEW_SCALE}px`
               }">
-                <!-- QR cells -->
                 <div v-for="(qr, qi) in page" :key="qi" class="absolute overflow-hidden" :style="qrPreviewStyle(qi)">
-                  <img :src="qr.img" class="block w-full"
-                    :style="{ height: `${QR_SIZE_MM * PREVIEW_SCALE}px`, objectFit: 'fill' }" />
-                  <!-- Label teks di bawah QR -->
-                  <div class="flex flex-col items-center justify-center bg-white"
-                    :style="{ height: `${LABEL_H_MM * PREVIEW_SCALE}px`, lineHeight: '1.1' }">
-                    <span
-                      :style="{ fontSize: `${PREVIEW_SCALE * 1.2}px`, color: '#888', fontStyle: 'italic', fontFamily: 'Arial, sans-serif' }">·
-                      Produk Olahan ·</span>
-                    <span
-                      :style="{ fontSize: `${PREVIEW_SCALE * 1.5}px`, color: '#555', letterSpacing: '0.3px', fontWeight: '600', fontFamily: 'Arial, sans-serif' }">PT
-                      KREASI TANI</span>
-                    <span
-                      :style="{ fontSize: `${PREVIEW_SCALE * 2}px`, color: '#e8b84b', letterSpacing: '1px', fontWeight: '700', fontFamily: 'Georgia, serif' }">BUMIAJI</span>
-                  </div>
+                  <img :src="qr.img" class="block w-full h-full" style="object-fit: fill;" />
                 </div>
 
-                <!-- Garis gunting vertikal (antara setiap kolom) -->
                 <template v-for="c in QR_COLS - 1" :key="`cv-${c}`">
                   <div class="absolute pointer-events-none" :style="{
-                    left: `${(MARGIN_H_MM + c * (QR_SIZE_MM + GAP_MM) - GAP_MM / 2) * PREVIEW_SCALE}px`,
+                    left: `${(MARGIN_H_MM + c * (CELL_W_MM + GAP_MM) - GAP_MM / 2) * PREVIEW_SCALE}px`,
                     top: `${MARGIN_V_MM * PREVIEW_SCALE}px`,
                     bottom: `${MARGIN_V_MM * PREVIEW_SCALE}px`,
                     width: '0px',
@@ -167,7 +149,6 @@
                   </div>
                 </template>
 
-                <!-- Garis gunting horizontal (antara setiap baris) -->
                 <template v-for="r in QR_ROWS - 1" :key="`ch-${r}`">
                   <div class="absolute pointer-events-none" :style="{
                     top: `${(MARGIN_V_MM + r * (CELL_H_MM + GAP_MM) - GAP_MM / 2) * PREVIEW_SCALE}px`,
@@ -188,25 +169,17 @@
     </div>
   </AdminLayout>
 
-  <!-- ── PRINT AREA (Teleport) ── -->
   <Teleport to="body">
     <div class="print-area" style="display:none">
       <div v-for="(page, pi) in pages" :key="pi" class="thermal-page">
-        <!-- Garis potong vertikal -->
         <template v-for="c in QR_COLS - 1" :key="`pv-${c}`">
-          <div class="cut-v" :style="{ left: `${MARGIN_H_MM + c * (QR_SIZE_MM + GAP_MM) - GAP_MM / 2}mm` }"></div>
+          <div class="cut-v" :style="{ left: `${MARGIN_H_MM + c * (CELL_W_MM + GAP_MM) - GAP_MM / 2}mm` }"></div>
         </template>
-        <!-- Garis potong horizontal -->
         <template v-for="r in QR_ROWS - 1" :key="`ph-${r}`">
           <div class="cut-h" :style="{ top: `${MARGIN_V_MM + r * (CELL_H_MM + GAP_MM) - GAP_MM / 2}mm` }"></div>
         </template>
-        <!-- QR cells -->
         <div v-for="(qr, qi) in page" :key="qi" class="qr-cell">
           <img :src="qr.img" class="qr-img" alt="" />
-          <div class="qr-label">
-            <span class="label-company">PT KREASI TANI</span>
-            <span class="label-brand">BUMIAJI</span>
-          </div>
         </div>
       </div>
     </div>
@@ -221,40 +194,27 @@ import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import { getQRDetail, getQRImage, markAsPrinted } from '@/services/qrService'
 
-// ── Design constants ──────────────────────────────────────────────────────────
 const ACCENT_COLOR = '#e8b84b'
-const BORDER_COLOR = '#1a1a2e'
-const BORDER_WIDTH = 6        // px pada canvas
-const BORDER_RADIUS = 16       // px pada canvas
-const LOGO_SIZE = 40       // px pada canvas (lebih kecil karena QR kecil)
+const LOGO_SIZE = 40
 
-// ── Layout config (semua dalam mm) ───────────────────────────────────────────
-// Kertas 100×80 mm, QR 20×20 mm, 3 kolom × 2 baris, gap 4 mm
 const PAPER_W_MM = 100
 const PAPER_H_MM = 80
-const GAP_MM = 4
-const QR_COLS = 3
+const GAP_MM = 6
+const QR_COLS = 2
 const QR_ROWS = 2
-const QR_PER_PAGE = QR_COLS * QR_ROWS   // = 6
+const QR_PER_PAGE = QR_COLS * QR_ROWS
 
-const QR_SIZE_MM = 20   // lebar & tinggi area QR saja
-const LABEL_H_MM = 5.5    // tinggi teks di bawah QR (di luar box QR)
-const CELL_W_MM = QR_SIZE_MM          // lebar cell = lebar QR
-const CELL_H_MM = QR_SIZE_MM + LABEL_H_MM  // tinggi cell = QR + label = 25 mm
+const CELL_W_MM = 47
+const CELL_H_MM = 29
 
-// Total grid = 3*20 + 2*4 = 68 mm wide, 2*25 + 1*4 = 54 mm tall
-// Margin: horizontal = (100-68)/2 = 16 mm, vertikal = (80-54)/2 = 13 mm
-const MARGIN_H_MM = (PAPER_W_MM - QR_COLS * CELL_W_MM - (QR_COLS - 1) * GAP_MM) / 2   // 16 mm
-const MARGIN_V_MM = (PAPER_H_MM - QR_ROWS * CELL_H_MM - (QR_ROWS - 1) * GAP_MM) / 2   // 13 mm
+const MARGIN_H_MM = (PAPER_W_MM - QR_COLS * CELL_W_MM - (QR_COLS - 1) * GAP_MM) / 2
+const MARGIN_V_MM = (PAPER_H_MM - QR_ROWS * CELL_H_MM - (QR_ROWS - 1) * GAP_MM) / 2
 
-const PREVIEW_SCALE = 3.2   // px per mm untuk preview layar
+const PREVIEW_SCALE = 3.2
 
-// ── Canvas QR size (pixel) ───────────────────────────────────────────────────
-// Render resolusi tinggi: 1 mm ≈ 11.8 px pada 300 dpi
-// QR 20 mm → canvas 240 px (cukup untuk scan)
-const CANVAS_QR_PX = 240
+const CANVAS_QR_PX = 300
 
-// ── Reactive state ────────────────────────────────────────────────────────────
+
 interface QREntry { img: string }
 
 interface BundleType {
@@ -303,7 +263,6 @@ const pages = computed(() => {
   return result
 })
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 const loadImage = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const img = new Image()
@@ -312,8 +271,6 @@ const loadImage = (src: string): Promise<HTMLImageElement> =>
     img.src = src
   })
 
-// ── Canvas composite: hanya QR + border + logo tengah
-//    Teks label PT KREASI TANI / BUMIAJI di-render via HTML (di luar canvas)
 const compositeQR = (
   qrBase64: string,
   logoImg: HTMLImageElement
@@ -321,65 +278,102 @@ const compositeQR = (
   new Promise((resolve, reject) => {
     const qrImg = new Image()
     qrImg.onload = () => {
-      const sz = CANVAS_QR_PX
-      const bw = BORDER_WIDTH
-      const br = BORDER_RADIUS
+      const D = CANVAS_QR_PX
+      const R = D / 2
+
+      // Shift everything slightly to the right to prevent printing cutoff on the left edge
+      const SHIFT_X = Math.round(D * 0.04) // 12px
+
+      const cx = R + SHIFT_X
+      const cy = R
+
+      // Box starts at the center of the QR circle to connect behind it
+      const BOX_X = R + SHIFT_X
+      // Wider box for horizontal/landscape layout ("memanjang")
+      const BOX_W = Math.round(D * 1.05)
+      // Shorter height for landscape layout (diperlebar ke atas/bawah sedikit)
+      const BOX_H = Math.round(D * 0.46)
+      const BOX_Y = (D - BOX_H) / 2
+
+      // Keep aspect ratio matching CELL_W_MM / CELL_H_MM (47 / 29)
+      const W = Math.round(D * (CELL_W_MM / CELL_H_MM))
+      const H = D
 
       const canvas = document.createElement('canvas')
-      canvas.width = sz
-      canvas.height = sz
+      canvas.width  = W
+      canvas.height = H
       const ctx = canvas.getContext('2d')!
 
-      // Background putih
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, sz, sz)
+      ctx.clearRect(0, 0, W, H)
 
+      const boxRad = Math.round(BOX_H * 0.14)
       const drawRR = (x: number, y: number, w: number, h: number, r: number) => {
         ctx.beginPath()
-        ctx.moveTo(x + r, y)
-        ctx.lineTo(x + w - r, y)
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r)
-        ctx.lineTo(x + w, y + h - r)
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
-        ctx.lineTo(x + r, y + h)
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r)
-        ctx.lineTo(x, y + r)
-        ctx.quadraticCurveTo(x, y, x + r, y)
+        ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y)
+        ctx.quadraticCurveTo(x+w, y, x+w, y+r)
+        ctx.lineTo(x+w, y+h-r)
+        ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h)
+        ctx.lineTo(x+r, y+h)
+        ctx.quadraticCurveTo(x, y+h, x, y+h-r)
+        ctx.lineTo(x, y+r)
+        ctx.quadraticCurveTo(x, y, x+r, y)
         ctx.closePath()
       }
 
-      // Outer border
-      ctx.fillStyle = BORDER_COLOR
-      drawRR(0, 0, sz, sz, br)
+      ctx.fillStyle = '#1a1a2e'
+      drawRR(BOX_X, BOX_Y, BOX_W, BOX_H, boxRad)
       ctx.fill()
 
-      // Inner white
+      const ins = Math.round(W * 0.007)
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)'
+      ctx.lineWidth   = Math.round(W * 0.004)
+      drawRR(BOX_X+ins, BOX_Y+ins, BOX_W-ins*2, BOX_H-ins*2, boxRad-ins)
+      ctx.stroke()
+
+      // The circle covers from x = 0 to x = cx + R (300px).
+      // The box extends from BOX_X (150px) to BOX_X + BOX_W (450px).
+      // We want to center the text in the visible (non-covered) part of the box.
+      const VISIBLE_X = cx + R
+      const VISIBLE_W = (BOX_X + BOX_W) - VISIBLE_X
+      const bCx = VISIBLE_X + VISIBLE_W / 2
+      const bCy = BOX_Y + BOX_H / 2
+
+      ctx.fillStyle    = '#ffffff'
+      ctx.textAlign    = 'center'
+      ctx.textBaseline = 'middle'
+      let fontSize = Math.round(BOX_H * 0.45)
+      do {
+        ctx.font = `bold italic ${fontSize}px Georgia, serif`
+        fontSize--
+      } while (ctx.measureText('Bumiaji').width > VISIBLE_W * 0.85 && fontSize > 10)
+      ctx.fillText('Bumiaji', bCx, bCy)
+
+      const ringW = Math.round(D * 0.022)
+
+      ctx.fillStyle = '#1a1a1a'
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.fill()
+
       ctx.fillStyle = '#ffffff'
-      drawRR(bw, bw, sz - bw * 2, sz - bw * 2, br - bw)
-      ctx.fill()
+      ctx.beginPath(); ctx.arc(cx, cy, R - ringW, 0, Math.PI*2); ctx.fill()
 
-      // Clip & gambar QR
+      const qrPad = ringW + Math.round(D * 0.010)
+      const qrR   = R - qrPad
+      const qrSide = Math.floor(qrR * Math.SQRT2)
+      const qrHalf = qrSide / 2
       ctx.save()
-      drawRR(bw, bw, sz - bw * 2, sz - bw * 2, br - bw)
-      ctx.clip()
-      ctx.drawImage(qrImg, bw, bw, sz - bw * 2, sz - bw * 2)
+      ctx.beginPath(); ctx.arc(cx, cy, qrR, 0, Math.PI*2); ctx.clip()
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(cx - qrR, cy - qrR, qrR*2, qrR*2)
+      ctx.drawImage(qrImg, cx - qrHalf, cy - qrHalf, qrSide, qrSide)
       ctx.restore()
 
-      // Kotak putih di belakang logo
-      const logoPad = 5
+      const logoPad = 3
       const logoBox = LOGO_SIZE + logoPad * 2
-      const lbx = (sz - logoBox) / 2
-      const lby = (sz - logoBox) / 2
-
       ctx.fillStyle = '#ffffff'
       ctx.beginPath()
-      ctx.roundRect(lbx, lby, logoBox, logoBox, 8)
+      ;(ctx as any).roundRect(cx - logoBox/2, cy - logoBox/2, logoBox, logoBox, 4)
       ctx.fill()
-
-      // Logo di tengah QR
-      const lx = (sz - LOGO_SIZE) / 2
-      const ly = (sz - LOGO_SIZE) / 2
-      ctx.drawImage(logoImg, lx, ly, LOGO_SIZE, LOGO_SIZE)
+      ctx.drawImage(logoImg, cx - LOGO_SIZE/2, cy - LOGO_SIZE/2, LOGO_SIZE, LOGO_SIZE)
 
       resolve(canvas.toDataURL('image/png'))
     }
@@ -387,7 +381,6 @@ const compositeQR = (
     qrImg.src = qrBase64
   })
 
-// ── Fetch + komposit semua QR ─────────────────────────────────────────────────
 const fetchAndComposite = async (token: string) => {
   if (!bundleData.value) return
   isGenerating.value = true
@@ -448,7 +441,6 @@ const generateAll = async () => {
   await fetchAndComposite(bundleData.value.qr_token)
 }
 
-// ── Preview: posisi cell dalam px ────────────────────────────────────────────
 function qrPreviewStyle(index: number) {
   const col = index % QR_COLS
   const row = Math.floor(index / QR_COLS)
@@ -460,7 +452,6 @@ function qrPreviewStyle(index: number) {
   }
 }
 
-// ── Print ─────────────────────────────────────────────────────────────────────
 const doPrint = async () => {
   if (!isReady.value || !bundleData.value) return
 
@@ -478,10 +469,8 @@ const doPrint = async () => {
     document.head.appendChild(styleEl)
   }
 
-  const qrMM = QR_SIZE_MM.toFixed(4)
+  const cellWmm = CELL_W_MM.toFixed(4)
   const cellHmm = CELL_H_MM.toFixed(4)
-  const labHmm = LABEL_H_MM.toFixed(4)
-  const gapHalf = (GAP_MM / 2).toFixed(4)
 
   styleEl.textContent = `
     @media print {
@@ -500,7 +489,7 @@ const doPrint = async () => {
         padding: ${MARGIN_V_MM}mm ${MARGIN_H_MM}mm;
         box-sizing: border-box;
         display: grid;
-        grid-template-columns: repeat(${QR_COLS}, ${qrMM}mm);
+        grid-template-columns: repeat(${QR_COLS}, ${cellWmm}mm);
         grid-template-rows: repeat(${QR_ROWS}, ${cellHmm}mm);
         gap: ${GAP_MM}mm;
         background: white;
@@ -513,7 +502,6 @@ const doPrint = async () => {
         break-after: avoid;
       }
 
-      /* Garis potong vertikal */
       .cut-v {
         position: absolute;
         top:    ${MARGIN_V_MM}mm;
@@ -523,7 +511,6 @@ const doPrint = async () => {
         pointer-events: none;
       }
 
-      /* Garis potong horizontal */
       .cut-h {
         position: absolute;
         left:  ${MARGIN_H_MM}mm;
@@ -533,55 +520,18 @@ const doPrint = async () => {
         pointer-events: none;
       }
 
-      /* Cell = QR box + label teks */
       .qr-cell {
-        display: flex;
-        flex-direction: column;
-        width:  ${qrMM}mm;
-        height: ${cellHmm}mm;
-        box-sizing: border-box;
-        overflow: hidden;
-      }
+  display: block;
+  width:  ${cellWmm}mm;
+  height: ${cellHmm}mm;
+  overflow: hidden;
+}
 
       .qr-img {
-        display: block;
-        width:  ${qrMM}mm;
-        height: ${qrMM}mm;
-        object-fit: fill;
-        flex-shrink: 0;
-      }
-
-      /* Label teks di bawah QR box */
-      .qr-label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: ${labHmm}mm;
-        background: white;
-        line-height: 1.15;
-      }
-
-      .label-company {
-        font-family: Arial, Helvetica, sans-serif;
-        font-weight: 700;
-        font-size: 3.2pt;
-        color: #333333;
-        letter-spacing: 0.3pt;
-        text-transform: uppercase;
-        display: block;
-        text-align: center;
-      }
-      .label-product {
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 400;
-  font-style: italic;
-  font-size: 2.8pt;
-  color: #888888;
-  letter-spacing: 0.2pt;
   display: block;
-  text-align: center;
+  width:  ${cellWmm}mm;
+  height: ${cellHmm}mm;
+  object-fit: fill;
 }
 
       .label-brand {
@@ -597,7 +547,6 @@ const doPrint = async () => {
     }
   `
 
-  // ── Bangun DOM print container ────────────────────────────────────────────
   const existing = document.getElementById('print-container')
   if (existing) document.body.removeChild(existing)
 
@@ -613,16 +562,14 @@ const doPrint = async () => {
     const pageDiv = document.createElement('div')
     pageDiv.className = 'thermal-page'
 
-    // Garis potong vertikal (QR_COLS - 1)
     for (let c = 1; c < QR_COLS; c++) {
       const cutV = document.createElement('div')
       cutV.className = 'cut-v'
-      const leftMM = MARGIN_H_MM + c * (QR_SIZE_MM + GAP_MM) - GAP_MM / 2
+      const leftMM = MARGIN_H_MM + c * (CELL_W_MM + GAP_MM) - GAP_MM / 2
       cutV.style.left = `${leftMM.toFixed(4)}mm`
       pageDiv.appendChild(cutV)
     }
 
-    // Garis potong horizontal (QR_ROWS - 1)
     for (let r = 1; r < QR_ROWS; r++) {
       const cutH = document.createElement('div')
       cutH.className = 'cut-h'
@@ -631,7 +578,6 @@ const doPrint = async () => {
       pageDiv.appendChild(cutH)
     }
 
-    // QR cells
     pageEntries.forEach(entry => {
       const cell = document.createElement('div')
       cell.className = 'qr-cell'
@@ -641,26 +587,6 @@ const doPrint = async () => {
       img.className = 'qr-img'
       img.alt = ''
       cell.appendChild(img)
-
-      const label = document.createElement('div')
-      label.className = 'qr-label'
-
-      const company = document.createElement('span')
-      company.className = 'label-company'
-      company.textContent = 'PT KREASI TANI'
-
-      const brand = document.createElement('span')
-      brand.className = 'label-brand'
-      brand.textContent = 'BUMIAJI'
-
-      const product = document.createElement('span')
-      product.className   = 'label-product'
-      product.textContent = '· Produk Olahan ·'
-      label.appendChild(product)
-
-      label.appendChild(company)
-      label.appendChild(brand)
-      cell.appendChild(label)
       pageDiv.appendChild(cell)
     })
 
