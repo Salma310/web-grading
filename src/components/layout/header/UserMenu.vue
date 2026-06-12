@@ -4,11 +4,15 @@
       class="flex items-center text-gray-700 dark:text-gray-400"
       @click.prevent="toggleDropdown"
     >
-      <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-        <img src="/images/user/owner.jpg" alt="User" />
+      <span
+        class="mr-3 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
+      >
+        <UserCircleIcon class="h-6 w-6" />
       </span>
 
-      <span class="block mr-1 font-medium text-theme-sm">Musharof </span>
+      <span class="block mr-1 max-w-[140px] truncate font-medium text-theme-sm">
+        {{ displayName }}
+      </span>
 
       <ChevronDownIcon :class="{ 'rotate-180': dropdownOpen }" />
     </button>
@@ -20,10 +24,10 @@
     >
       <div>
         <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-          Musharof Chowdhury
+          {{ displayName }}
         </span>
         <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-          randomuser@pimjo.com
+          {{ displayEmail }}
         </span>
       </div>
 
@@ -42,34 +46,38 @@
           </router-link>
         </li>
       </ul>
-      <router-link
-        to="/signin"
+      <button
+        type="button"
         @click="signOut"
+        :disabled="isSigningOut"
         class="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
       >
         <LogoutIcon
           class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
         />
-        Sign out
-      </router-link>
+        {{ isSigningOut ? 'Signing out...' : 'Sign out' }}
+      </button>
     </div>
     <!-- Dropdown End -->
   </div>
 </template>
 
-<script setup>
-import { UserCircleIcon, ChevronDownIcon, LogoutIcon, SettingsIcon, InfoCircleIcon } from '@/icons'
-import { RouterLink } from 'vue-router'
-import { ref, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { UserCircleIcon, ChevronDownIcon, LogoutIcon } from '@/icons'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { getStoredUser, logout } from '@/services/authService'
 
 const dropdownOpen = ref(false)
-const dropdownRef = ref(null)
+const dropdownRef = ref<HTMLElement | null>(null)
+const isSigningOut = ref(false)
+const router = useRouter()
+const user = ref(getStoredUser())
 
-const menuItems = [
-  { href: '/profile', icon: UserCircleIcon, text: 'Edit profile' },
-  { href: '/chat', icon: SettingsIcon, text: 'Account settings' },
-  { href: '/profile', icon: InfoCircleIcon, text: 'Support' },
-]
+const menuItems = [{ href: '/profile', icon: UserCircleIcon, text: 'Edit Profil' }]
+
+const displayName = computed(() => user.value?.name || 'User')
+const displayEmail = computed(() => user.value?.email || '-')
 
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value
@@ -79,23 +87,34 @@ const closeDropdown = () => {
   dropdownOpen.value = false
 }
 
-const signOut = () => {
-  // Implement sign out logic here
-  console.log('Signing out...')
+const signOut = async () => {
+  if (isSigningOut.value) return
+
+  isSigningOut.value = true
+  await logout()
   closeDropdown()
+  router.push('/signin')
 }
 
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+const refreshStoredUser = () => {
+  user.value = getStoredUser()
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target
+
+  if (target instanceof Node && dropdownRef.value && !dropdownRef.value.contains(target)) {
     closeDropdown()
   }
 }
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  window.addEventListener('auth-user-updated', refreshStoredUser)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('auth-user-updated', refreshStoredUser)
 })
 </script>

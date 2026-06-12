@@ -5,10 +5,19 @@
       aria-hidden="true"
       @click="$emit('close')"
     ></div>
-    <slot name="body"></slot>
+    <slot>
+      <slot name="body"></slot>
+    </slot>
   </div>
 </template>
 
-<script setup>
-// No additional setup needed
+<script setup lang="ts">
+defineEmits<{
+  close: []
+}>()
+
+defineSlots<{
+  default?: () => unknown
+  body?: () => unknown
+}>()
 </script>
