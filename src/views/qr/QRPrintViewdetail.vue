@@ -398,7 +398,10 @@ const fetchAndComposite = async (token: string) => {
     const res = await getQRImage(token)
     const imagePath = res.data.image_url as string
 
-    const imgRes = await fetch(imagePath)
+    // Strip base URL absolut → jadi path relatif → lewat Vite proxy
+    const relativePath = new URL(imagePath, window.location.origin).pathname
+
+    const imgRes = await fetch(relativePath)
     if (!imgRes.ok) throw new Error(`Gagal fetch gambar: ${imgRes.status}`)
     const blob = await imgRes.blob()
     const qrBase64 = await new Promise<string>((resolve, reject) => {

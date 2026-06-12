@@ -226,10 +226,16 @@
             <p class="text-xs text-gray-400">Tanggal Panen</p>
             <p class="mt-0.5 text-sm font-medium text-gray-700 dark:text-gray-300">{{ formatDate(batch.harvest_date) }}</p>
             <p class="text-xs text-gray-400">{{ formatTime(batch.harvest_date) }}</p>
-          </div>
+          </div>  
+        </div>
+        <div class="mt-5 grid grid-cols-2 gap-4 pt-5 sm:grid-cols-4 ">
           <div>
             <p class="text-xs text-gray-400">Perlakuan</p>
             <p class="mt-0.5 text-sm font-medium text-gray-700 dark:text-gray-300">{{ batch.treatment || '—' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400">Keterangan</p>
+            <p class="mt-0.5 text-sm font-medium text-gray-700 dark:text-gray-300">{{ batch.notes || '—' }}</p>
           </div>
         </div>
       </div>
@@ -314,7 +320,7 @@
                   <div v-if="grading.image_urls?.length" class="flex gap-1">
                     <img
                       v-for="(url, i) in grading.image_urls.slice(0, 2)" :key="i"
-                      :src="`http://localhost:3000${url}`"
+                      :src="url"
                       class="h-10 w-10 rounded-lg object-cover border border-gray-200 dark:border-gray-700 cursor-pointer hover:opacity-80 transition-opacity"
                       @click="openImagePreview(grading.image_urls, i)"
                     />
@@ -352,7 +358,8 @@
                   <span class="rounded px-2 py-0.5 text-xs"
                     :class="{
                       'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400': grading.status === 'ERROR',
-                      'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400': grading.status === 'PROCESSING',
+                      'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400': grading.status === 'PENDING',                      
+                      'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400': grading.status === 'PROCESSING',
                       'bg-green-100 text-green-500 dark:bg-green-900/30 dark:text-green-400': grading.status === 'DONE'
                     }">
                     {{ grading.status }}
@@ -491,7 +498,7 @@
         <div v-if="imagePreview.show"
           class="fixed inset-0 z-[60] flex items-center justify-center bg-black/90"
           @click="imagePreview.show = false">
-          <img :src="`http://localhost:3000${imagePreview.urls[imagePreview.index]}`"
+          <img :src="imagePreview.urls[imagePreview.index]"
             class="max-h-[90vh] max-w-[90vw] rounded-xl object-contain" @click.stop/>
           <button class="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
             @click="imagePreview.show = false">
