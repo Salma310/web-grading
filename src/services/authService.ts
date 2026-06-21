@@ -26,6 +26,7 @@ export interface AuthSession extends AuthTokens {
 export interface LoginPayload {
   email: string
   password: string
+  client?: string
 }
 
 export interface RegisterPayload {
@@ -85,7 +86,7 @@ export const isAuthenticated = (): boolean => !!getAccessToken()
 // ─────────────────────────────────────────
 
 export const login = async (credentials: LoginPayload): Promise<AuthSession> => {
-  const res = await api.post<{ success: boolean; data: AuthSession }>('/auth/login', credentials)
+  const res = await api.post<{ success: boolean; data: AuthSession }>('/auth/login', { ...credentials, client: 'web' })
   const { user, accessToken, refreshToken } = res.data.data
   saveSession({ accessToken, refreshToken, user })
   return res.data.data
@@ -96,6 +97,12 @@ export const register = async (payload: RegisterPayload): Promise<AuthSession> =
   const { user, accessToken, refreshToken } = res.data.data
   saveSession({ accessToken, refreshToken, user })
   return res.data.data
+}
+
+// Registrasi user baru oleh admin — tidak menyimpan session token admin yang aktif
+export const registerUser = async (payload: RegisterPayload): Promise<AuthSession['user']> => {
+  const res = await api.post<{ success: boolean; data: AuthSession }>('/auth/register', payload)
+  return res.data.data.user
 }
 
 export const logout = async (): Promise<void> => {

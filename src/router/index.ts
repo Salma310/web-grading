@@ -107,12 +107,12 @@ const router = createRouter({
     // ─────────────────────────────────────────
     // ROLE-BASED ROUTES
     // ─────────────────────────────────────────
-    // {
-    //   path: '/users',
-    //   name: 'User Management',
-    //   component: () => import('../views/UserManagement.vue'),
-    //   meta: { title: 'User Management', requiresAuth: true, roles: ['ADMIN'] },
-    // },
+    {
+      path: '/users',
+      name: 'User Management',
+      component: () => import('../views/UserManagementPage.vue'),
+      meta: { title: 'User Management', requiresAuth: true },
+    },
 
     // ─────────────────────────────────────────
     // OTHERS

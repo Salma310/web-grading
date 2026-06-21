@@ -10,8 +10,13 @@
         <UserCircleIcon class="h-6 w-6" />
       </span>
 
-      <span class="block mr-1 max-w-[140px] truncate font-medium text-theme-sm">
-        {{ displayName }}
+      <span class="mr-1 flex flex-col items-start max-w-[140px] truncate">
+        <span class="block font-medium text-theme-sm">
+          {{ displayName }}
+        </span>
+        <span class="block text-theme-xs text-gray-500 dark:text-gray-400 mt-0.5">
+          {{ displayRole }}
+        </span>
       </span>
 
       <ChevronDownIcon :class="{ 'rotate-180': dropdownOpen }" />
@@ -78,6 +83,7 @@ const menuItems = [{ href: '/profile', icon: UserCircleIcon, text: 'Edit Profil'
 
 const displayName = computed(() => user.value?.name || 'User')
 const displayEmail = computed(() => user.value?.email || '-')
+const displayRole = computed(() => user.value?.role || '-')
 
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value

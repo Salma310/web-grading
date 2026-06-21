@@ -35,7 +35,7 @@
         <img v-else src="/images/logo/logo-icon.png" alt="Logo" width="32" height="32" />
       </router-link>
     </div>
-    <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+    <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar h-full">
       <nav class="mb-6">
         <div class="flex flex-col gap-4">
           <div v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
@@ -184,6 +184,7 @@ import {
   HorizontalDots,
   TableIcon,
   ListIcon,
+  UserGroupIcon,
 } from '../../icons'
 import BoxCubeIcon from '@/icons/BoxCubeIcon.vue'
 import { useSidebar } from '@/composables/useSidebar'
@@ -222,9 +223,9 @@ const menuGroups = [
         path: '/farmer',
       },
       {
-        icon: UserCircleIcon,
-        name: 'User Profile',
-        path: '/profile',
+        icon: UserGroupIcon,
+        name: 'User',
+        path: '/users',
       },
     ],
   },
