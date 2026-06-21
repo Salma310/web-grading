@@ -8,6 +8,12 @@ export interface BatchInfo {
   fruit_type: string | null
 }
 
+export interface GradedByInfo {
+  id:   string
+  name: string
+  role: string
+}
+
 export interface GradingItem {
   id:              string
   grading_code:    string
@@ -22,6 +28,7 @@ export interface GradingItem {
   qr_token:        string
   image_urls:      string[]
   status:          GradingStatus
+  graded_by:       GradedByInfo | null
   createdAt:       string
   batch:           BatchInfo | null
 }

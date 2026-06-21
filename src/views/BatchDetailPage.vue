@@ -226,12 +226,17 @@
             <p class="text-xs text-gray-400">Tanggal Panen</p>
             <p class="mt-0.5 text-sm font-medium text-gray-700 dark:text-gray-300">{{ formatDate(batch.harvest_date) }}</p>
             <p class="text-xs text-gray-400">{{ formatTime(batch.harvest_date) }}</p>
-          </div>  
-        </div>
-        <div class="mt-5 grid grid-cols-2 gap-4 pt-5 sm:grid-cols-4 ">
+            <!-- <p v-if="getCreatorName(batch)" class="text-xs text-gray-400 mt-1">Dibuat oleh: {{ getCreatorName(batch) }}</p> -->
+          </div>
           <div>
             <p class="text-xs text-gray-400">Perlakuan</p>
             <p class="mt-0.5 text-sm font-medium text-gray-700 dark:text-gray-300">{{ batch.treatment || '—' }}</p>
+          </div>
+        </div>
+        <div class="mt-5 grid grid-cols-2 gap-4 pt-5 sm:grid-cols-4 ">
+          <div>
+            <p class="text-xs text-gray-400">Dibuat oleh</p>
+            <p class="mt-0.5 text-sm font-medium text-gray-700 dark:text-gray-300">{{ getCreatorName(batch) || '—' }}</p>
           </div>
           <div>
             <p class="text-xs text-gray-400">Keterangan</p>
@@ -305,6 +310,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Grade</th>
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Confidence</th>
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Metode</th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Operator</th>
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Status</th>
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Waktu</th>
               </tr>
@@ -353,6 +359,9 @@
                       : 'bg-gray-100 text-gray-500 dark:bg-gray-800'">
                     {{ grading.grading_method || 'AI' }}
                   </span>
+                </td>
+                <td class="px-6 py-4 text-xs text-gray-600 dark:text-gray-400">
+                  {{ getOperatorName(grading) }}
                 </td>
                 <td class="px-6 py-4">
                   <span class="rounded px-2 py-0.5 text-xs"
@@ -597,6 +606,32 @@ const gradeActiveClass = (grade) => ({
   C:      'border-yellow-400 bg-yellow-50 text-yellow-700 dark:border-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400',
   REJECT: 'border-red-400 bg-red-50 text-red-600 dark:border-red-600 dark:bg-red-900/20 dark:text-red-400',
 }[grade] || '')
+
+const getOperatorName = (grading) => {
+  if (!grading) return '—'
+  
+  // Cek berbagai kemungkinan nama field untuk operator grading
+  if (grading.graded_by?.name?.trim?.()) return grading.graded_by.name.trim()
+  if (grading.gradedBy?.name?.trim?.()) return grading.gradedBy.name.trim()
+  if (grading.graded_by_name?.trim?.()) return grading.graded_by_name.trim()
+  if (grading.operator?.name?.trim?.()) return grading.operator.name.trim()
+  if (grading.operator?.trim?.()) return grading.operator.trim()
+  
+  return '—'
+}
+
+const getCreatorName = (batch) => {
+  if (!batch) return ''
+  
+  // Cek berbagai kemungkinan nama field untuk pembuat batch
+  if (batch.created_by?.name?.trim?.()) return batch.created_by.name.trim()
+  if (batch.createdBy?.name?.trim?.()) return batch.createdBy.name.trim()
+  if (batch.created_by_name?.trim?.()) return batch.created_by_name.trim()
+  if (batch.user?.name?.trim?.()) return batch.user.name.trim()
+  if (batch.user?.trim?.()) return batch.user.trim()
+  
+  return ''
+}
 
 // ─── File handling ────────────────────────────────────────
 const addFiles = (files) => Array.from(files).forEach(file => {

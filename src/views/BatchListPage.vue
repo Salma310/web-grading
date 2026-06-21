@@ -119,32 +119,76 @@
       <!-- Table Card -->
       <div class="rounded-2xl border border-gray-100 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
 
-        <div class="flex flex-col gap-3 border-b border-gray-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800">
-          <div>
-            <h3 class="text-base font-semibold text-gray-800 dark:text-white">Daftar Batch</h3>
-            <p class="mt-0.5 text-sm text-gray-400">Semua sesi panen yang tercatat</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="relative">
-              <select v-model="filterStatus"
-                class="h-9 appearance-none rounded-lg border border-gray-200 bg-transparent pl-3 pr-8 text-sm text-gray-600 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-400">
-                <option value="">Semua Status</option>
-                <option value="OPEN">Open</option>
-                <option value="CLOSED">Closed</option>
-              </select>
-              <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                  <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
+        <div class="flex flex-col gap-4 border-b border-gray-100 px-6 py-4 dark:border-gray-800">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h3 class="text-base font-semibold text-gray-800 dark:text-white">Daftar Batch</h3>
+              <p class="mt-0.5 text-sm text-gray-400">Semua sesi panen yang tercatat</p>
             </div>
-            <router-link to="/batches/add"
-              class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors">
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-                <path d="M10 4.167v11.666M4.167 10h11.666" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-              Tambah Batch
-            </router-link>
+            <div class="flex items-center gap-3">
+              <router-link to="/batches/add"
+                class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 4.167v11.666M4.167 10h11.666" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                Tambah Batch
+              </router-link>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-3 justify-between">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              <!-- Search -->
+              <div class="relative w-full sm:w-64">
+                <input v-model="searchQuery" type="text" placeholder="Cari kode, petani, lahan..."
+                  class="w-full h-9 rounded-lg border border-gray-200 bg-transparent pl-9 pr-3 text-sm text-gray-600 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-400">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+              <!-- Date Filter -->
+              <div class="relative">
+                <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                    <path
+                      d="M6 2V4M14 2V4M3 8H17M5 5H15C16.1046 5 17 5.89543 17 7V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V7C3 5.89543 3.89543 5 5 5Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+
+                <FlatPickr
+                  v-model="filterDate"
+                  :config="{
+                    dateFormat: 'Y-m-d',
+                    allowInput: true
+                  }"
+                  placeholder="Semua Tanggal"
+                  class="h-9 min-w-[170px] rounded-lg border border-gray-200 bg-transparent pl-9 pr-3 text-sm text-gray-600 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-400"
+                />
+              </div>
+
+              <!-- Status Filter -->
+              <div class="relative">
+                <select v-model="filterStatus"
+                  class="h-9 appearance-none rounded-lg border border-gray-200 bg-transparent pl-3 pr-8 text-sm text-gray-600 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-400">
+                  <option value="">Semua Status</option>
+                  <option value="OPEN">Open</option>
+                  <option value="CLOSED">Closed</option>
+                </select>
+                <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                    <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -183,7 +227,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
-              <tr v-for="batch in filteredBatches" :key="batch.id"
+              <tr v-for="batch in paginatedBatches" :key="batch.id"
                 class="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
 
                 <td class="px-6 py-4">
@@ -272,22 +316,71 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-100 px-6 py-4 dark:border-gray-800">
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-500 dark:text-gray-400">Tampilkan</span>
+            <div class="relative">
+              <select v-model="itemsPerPage"
+                class="h-8 appearance-none rounded border border-gray-200 bg-transparent pl-2 pr-6 text-sm text-gray-600 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-400">
+                <option :value="10">10</option>
+                <option :value="25">25</option>
+                <option :value="50">50</option>
+                <option :value="100">100</option>
+              </select>
+              <span class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+                  <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+            <span class="text-sm text-gray-500 dark:text-gray-400">data</span>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+              Halaman <span class="font-medium text-gray-700 dark:text-gray-300">{{ currentPage }}</span> dari <span class="font-medium text-gray-700 dark:text-gray-300">{{ totalPages || 1 }}</span>
+            </span>
+            <div class="flex items-center gap-1">
+              <button @click="prevPage" :disabled="currentPage <= 1"
+                class="flex h-8 w-8 items-center justify-center rounded border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                  <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button @click="nextPage" :disabled="currentPage >= totalPages"
+                class="flex h-8 w-8 items-center justify-center rounded border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                  <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </AdminLayout>
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted, watch } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import { getBatches, closeBatch, getBatchBundles} from '@/services/batchService'
 import { getQRImage } from '@/services/qrService'
+import FlatPickr from 'vue-flatpickr-component'
+import 'flatpickr/dist/flatpickr.css'
 
 const currentPageTitle = ref('Batch Panen')
 const isLoading = ref(false)
 const batches = ref([])
 const filterStatus = ref('')
+const filterDate = ref('')
+const searchQuery = ref('')
+const itemsPerPage = ref(10)
+const currentPage = ref(1)
 const closingId = ref(null)
 
 // ─── Bundle Modal ─────────────────────────────────────────
@@ -304,11 +397,49 @@ const stats = computed(() => ({
   totalFruits: batches.value.reduce((sum, b) => sum + (b.total_fruits || 0), 0),
 }))
 
-const filteredBatches = computed(() =>
-  filterStatus.value
-    ? batches.value.filter(b => b.status === filterStatus.value)
-    : batches.value
-)
+const filteredBatches = computed(() => {
+  let result = batches.value
+
+  if (filterStatus.value) {
+    result = result.filter(b => b.status === filterStatus.value)
+  }
+
+  if (filterDate.value) {
+    result = result.filter(b => b.harvest_date && b.harvest_date.startsWith(filterDate.value))
+  }
+
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    result = result.filter(b => 
+      (b.lot_code && b.lot_code.toLowerCase().includes(q)) ||
+      (b.farmer?.name && b.farmer.name.toLowerCase().includes(q)) ||
+      (b.land?.land_name && b.land.land_name.toLowerCase().includes(q)) ||
+      (b.fruit_type && b.fruit_type.toLowerCase().includes(q))
+    )
+  }
+
+  return result
+})
+
+const totalPages = computed(() => Math.ceil(filteredBatches.value.length / itemsPerPage.value))
+
+const paginatedBatches = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredBatches.value.slice(start, end)
+})
+
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+
+watch([filterStatus, filterDate, searchQuery, itemsPerPage], () => {
+  currentPage.value = 1
+})
 
 // ─── Helpers ──────────────────────────────────────────────
 const formatDate = (dateStr) => {

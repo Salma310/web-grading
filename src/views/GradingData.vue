@@ -105,6 +105,7 @@
               <th class="pb-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Metode</th>
               <th class="pb-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Confidence</th>
               <th class="pb-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Status</th>
+              <th class="pb-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Operator</th>
               <th class="pb-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Tanggal</th>
               <th class="pb-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Aksi</th>
             </tr>
@@ -174,6 +175,10 @@
                 </span>
               </td>
 
+              <td class="py-3.5 text-xs text-gray-600 dark:text-gray-400">
+                {{ getOperatorName(item) }}
+              </td>
+
               <td class="py-3.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                 {{ formatDate(item.createdAt) }}
               </td>
@@ -214,7 +219,7 @@
             </tr>
 
             <tr v-if="filteredData.length === 0">
-              <td colspan="9" class="text-center py-16 text-gray-400 dark:text-gray-500">
+              <td colspan="10" class="text-center py-16 text-gray-400 dark:text-gray-500">
                 <svg class="mx-auto mb-3 w-10 h-10 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -293,6 +298,10 @@
                   <span class="w-1.5 h-1.5 rounded-full" :class="statusDotClass(selectedItem.status)"></span>
                   {{ statusLabel(selectedItem.status) }}
                 </span>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 mb-1">Operator</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300">{{ getOperatorName(selectedItem) }}</p>
               </div>
               <div>
                 <p class="text-xs text-gray-400 mb-1">Confidence</p>
@@ -608,6 +617,21 @@ const confidenceBarClass = (v: number): string => {
 }
 
 // ── Fetch ─────────────────────────────────────────────────────────────
+const getOperatorName = (item: GradingItem | null): string => {
+  if (!item) return '—'
+
+  const row = item as GradingItem & {
+    gradedBy?: { name?: string | null } | null
+    graded_by_name?: string | null
+  }
+
+  if (row.graded_by?.name?.trim()) return row.graded_by.name.trim()
+  if (row.gradedBy?.name?.trim()) return row.gradedBy.name.trim()
+  if (row.graded_by_name?.trim()) return row.graded_by_name.trim()
+
+  return '—'
+}
+
 const fetchData = async () => {
   loading.value = true
   try {
