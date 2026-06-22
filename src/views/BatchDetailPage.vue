@@ -326,7 +326,7 @@
                   <div v-if="grading.image_urls?.length" class="flex gap-1">
                     <img
                       v-for="(url, i) in grading.image_urls.slice(0, 2)" :key="i"
-                      :src="url"
+                      :src="getImageUrl(url)"
                       class="h-10 w-10 rounded-lg object-cover border border-gray-200 dark:border-gray-700 cursor-pointer hover:opacity-80 transition-opacity"
                       @click="openImagePreview(grading.image_urls, i)"
                     />
@@ -507,7 +507,7 @@
         <div v-if="imagePreview.show"
           class="fixed inset-0 z-[60] flex items-center justify-center bg-black/90"
           @click="imagePreview.show = false">
-          <img :src="imagePreview.urls[imagePreview.index]"
+          <img :src="getImageUrl(imagePreview.urls[imagePreview.index])"
             class="max-h-[90vh] max-w-[90vw] rounded-xl object-contain" @click.stop/>
           <button class="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
             @click="imagePreview.show = false">
@@ -643,6 +643,10 @@ const handleDrop = (e) => { isDragging.value = false; addFiles(e.dataTransfer.fi
 const removeFile = (i) => { URL.revokeObjectURL(selectedFiles.value[i].preview); selectedFiles.value.splice(i, 1) }
 const openImagePreview = (urls, index) => { imagePreview.urls = urls; imagePreview.index = index; imagePreview.show = true }
 
+
+const getImageUrl = (url) =>
+  url?.startsWith('http') ? url : `${import.meta.env.VITE_API_BASE_URL ?? ''}${url}`
+
 // ─── Modal ────────────────────────────────────────────────
 const closeModal = () => {
   showAddModal.value = false
@@ -728,7 +732,10 @@ const previewQRInModal = async (token) => {
 
   try {
     const res = await getQRImage(token)
-    qrPreview.imageUrl = res.data.image_url
+    const rawUrl = res.data.image_url
+    qrPreview.imageUrl = rawUrl?.startsWith('http')
+      ? rawUrl
+      : `${import.meta.env.VITE_API_BASE_URL ?? ''}${rawUrl}`
   } catch (err) {
     console.error('Gagal load QR:', err)
   } finally {

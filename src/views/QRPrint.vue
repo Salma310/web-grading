@@ -648,7 +648,10 @@ const openDetail = async (bundle) => {
 
   try {
     const qrRes = await getQRImage(bundle.qr_token)
-    detailModal.qrImageUrl = qrRes.data.image_url
+    const rawUrl = qrRes.data.image_url
+    detailModal.qrImageUrl = rawUrl?.startsWith('http')
+      ? rawUrl
+      : `${import.meta.env.VITE_API_BASE_URL ?? ''}${rawUrl}`
   } catch (err) {
     console.error('Failed to load QR image:', err)
   } finally {
