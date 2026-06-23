@@ -187,7 +187,7 @@ export default defineComponent({
     const selectedView = ref('all')
 
     // Filter mode
-    const filterModeOptions = [
+    const filterModeOptions: { value: 'month' | 'range'; label: string }[] = [
       { value: 'month', label: 'Per Bulan' },
       { value: 'range', label: 'Rentang Tanggal' },
     ]

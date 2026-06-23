@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getAccessToken, refreshAccessToken, clearSession } from './authService'
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000/api',
   headers: {
     'Content-Type': 'application/json',
   },

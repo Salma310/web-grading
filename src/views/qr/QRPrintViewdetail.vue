@@ -391,10 +391,11 @@ const fetchAndComposite = async (token: string) => {
     const res = await getQRImage(token)
     const imagePath = res.data.image_url as string
 
-    // Strip base URL absolut → jadi path relatif → lewat Vite proxy
-    const relativePath = new URL(imagePath, window.location.origin).pathname
+    // Ambil base URL backend (dari VITE_API_BASE_URL) untuk mengambil gambar QR langsung dari backend
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
+    const imageUrl = imagePath.startsWith('http') ? imagePath : `${baseUrl}${imagePath}`
 
-    const imgRes = await fetch(relativePath)
+    const imgRes = await fetch(imageUrl)
     if (!imgRes.ok) throw new Error(`Gagal fetch gambar: ${imgRes.status}`)
     const blob = await imgRes.blob()
     const qrBase64 = await new Promise<string>((resolve, reject) => {

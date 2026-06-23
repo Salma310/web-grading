@@ -143,7 +143,7 @@ export default defineComponent({
     const activePercent = computed((): number => {
       const total = props.summary?.farmers?.total
       const active = props.summary?.farmers?.active
-      if (!total || total === 0) return 0
+      if (!total || active === undefined || total === 0) return 0
       return Math.round((active / total) * 100)
     })
 
